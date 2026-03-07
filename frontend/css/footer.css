@@ -1,0 +1,107 @@
+/* frontend/css/footer.css */
+
+.footer-container {
+  background-color: #1a1a1a; /* สีพื้นหลังดำเทาตาม Design */
+  color: #ffffff;
+  padding: 60px 10%;
+  font-family: "Kanit", sans-serif;
+  margin-top: auto; /* ดันให้อยู่ล่างสุดเสมอ */
+}
+
+.footer-grid {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 30px;
+}
+
+/* ---------------- คอลัมน์ 1: โลโก้ ---------------- */
+.footer-col-1 {
+  flex: 1.5;
+  min-width: 250px;
+}
+
+.footer-logo {
+  height: 45px;
+  margin-bottom: 25px;
+}
+
+.footer-col-1 p {
+  color: #cccccc;
+  font-size: 14px;
+  font-weight: 300;
+}
+
+/* ---------------- คอลัมน์ 2: เมนู ---------------- */
+.footer-col-2 {
+  flex: 1;
+  min-width: 200px;
+}
+
+.footer-col-2 h4 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 25px;
+}
+
+.footer-col-2 ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-col-2 ul li {
+  margin-bottom: 15px;
+}
+
+.footer-col-2 ul li a {
+  color: #cccccc;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 300;
+  transition: color 0.3s;
+}
+
+.footer-col-2 ul li a:hover {
+  color: #d71920; /* ชี้แล้วเปลี่ยนเป็นสีแดง */
+}
+
+/* ---------------- คอลัมน์ 3: โซเชียล ---------------- */
+.footer-col-3 {
+  flex: 1;
+  min-width: 200px;
+}
+
+.footer-col-3 h4 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 25px;
+}
+
+.footer-socials {
+  display: flex;
+  gap: 15px;
+}
+
+.footer-socials a {
+  color: #ffffff;
+  font-size: 26px; /* ขนาดไอคอนใหญ่ชัดเจนตามภาพ */
+  transition:
+    transform 0.3s,
+    color 0.3s;
+}
+
+.footer-socials a:hover {
+  color: #d71920;
+  transform: translateY(-3px); /* ชี้แล้วไอคอนเด้งขึ้นนิดนึง (Gimmick) */
+}
+
+/* รองรับหน้าจอมือถือ */
+@media (max-width: 768px) {
+  .footer-grid {
+    flex-direction: column;
+    text-align: left;
+  }
+}
