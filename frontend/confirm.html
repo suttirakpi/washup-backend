@@ -1,222 +1,341 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="th">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ยืนยันการจอง - WASH UP</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ยืนยันการจอง - WASH UP</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
 
-<style>
-body { background-color: #f8f9fa; margin: 0; padding: 0; }
-.booking-flow { max-width: 800px; margin: 40px auto; padding: 30px; font-family: 'Kanit', sans-serif; background: #fff; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+    <style>
+      body {
+        background-color: #f8f9fa;
+        margin: 0;
+        padding: 0;
+      }
+      .booking-flow {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 30px;
+        font-family: "Kanit", sans-serif;
+        background: #fff;
+        border-radius: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      }
 
-.step-section { margin-bottom: 40px; }
-.step-title { font-size: 22px; display: flex; align-items: center; gap: 15px; margin-bottom: 20px; color: #333; }
+      .step-section {
+        margin-bottom: 40px;
+      }
+      .step-title {
+        font-size: 22px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 20px;
+        color: #333;
+      }
 
-.step-num {
-background: #d71920;
-color: #ffffff;
-width: 38px;
-height: 38px;
-border-radius: 50%;
-display: flex;
-align-items: center;
-justify-content: center;
-font-size: 18px;
-font-weight: 800;
-box-shadow: 0 3px 6px rgba(215, 25, 32, 0.3);
-flex-shrink: 0;
-}
+      .step-num {
+        background: #d71920;
+        color: #ffffff;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        font-weight: 800;
+        box-shadow: 0 3px 6px rgba(215, 25, 32, 0.3);
+        flex-shrink: 0;
+      }
 
-.car-card-active {
-display: flex; align-items: center; gap: 25px;
-background: #fff5f5; border: 2px solid #d71920;
-padding: 20px; border-radius: 20px; position: relative;
-}
+      .car-card-active {
+        display: flex;
+        align-items: center;
+        gap: 25px;
+        background: #fff5f5;
+        border: 2px solid #d71920;
+        padding: 20px;
+        border-radius: 20px;
+        position: relative;
+      }
 
-.car-status-badge {
-position: absolute; top: 10px; right: 20px;
-background: #d71920; color: #fff; padding: 4px 12px;
-border-radius: 20px; font-size: 12px; font-weight: 600;
-}
+      .car-status-badge {
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        background: #d71920;
+        color: #fff;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+      }
 
-.car-icon-wrapper {
-background: #d71920; width: 80px; height: 80px;
-border-radius: 50%; display: flex; align-items: center; justify-content: center;
-}
+      .car-icon-wrapper {
+        background: #d71920;
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
 
-.car-icon-wrapper img { width: 50px; filter: brightness(0) invert(1); }
+      .car-icon-wrapper img {
+        width: 50px;
+        filter: brightness(0) invert(1);
+      }
 
-.car-details strong { font-size: 20px; color: #111; display: block; margin-bottom: 5px; }
-.car-details .label { font-size: 12px; color: #d71920; text-transform: uppercase; font-weight: 600; }
-.car-details p { margin: 0; color: #555; }
+      .car-details strong {
+        font-size: 20px;
+        color: #111;
+        display: block;
+        margin-bottom: 5px;
+      }
+      .car-details .label {
+        font-size: 12px;
+        color: #d71920;
+        text-transform: uppercase;
+        font-weight: 600;
+      }
+      .car-details p {
+        margin: 0;
+        color: #555;
+      }
 
-.service-summary-item {
-display: flex; justify-content: space-between; align-items: center;
-padding: 18px 25px; background: #f9f9f9; border-radius: 15px; margin-bottom: 12px;
-}
+      .service-summary-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 18px 25px;
+        background: #f9f9f9;
+        border-radius: 15px;
+        margin-bottom: 12px;
+      }
 
-.main-service { border-left: 6px solid #d71920; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+      .main-service {
+        border-left: 6px solid #d71920;
+        background: #fff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      }
 
-.service-info { display: flex; align-items: center; gap: 15px; }
-.service-info i { color: #d71920; font-size: 20px; }
+      .service-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+      .service-info i {
+        color: #d71920;
+        font-size: 20px;
+      }
 
-.selected-datetime { display: flex; gap: 15px; }
+      .selected-datetime {
+        display: flex;
+        gap: 15px;
+      }
 
-.dt-badge {
-flex: 1; background: #333; color: #fff;
-padding: 18px; border-radius: 15px;
-display: flex; align-items: center; justify-content: center; gap: 12px;
-font-size: 16px;
-}
+      .dt-badge {
+        flex: 1;
+        background: #333;
+        color: #fff;
+        padding: 18px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        font-size: 16px;
+      }
 
-.dt-badge i { color: #d71920; font-size: 18px; }
+      .dt-badge i {
+        color: #d71920;
+        font-size: 18px;
+      }
 
-.summary-payment-bar {
-background: #f2f2f2; padding: 30px; border-radius: 25px;
-display: flex; justify-content: space-between; align-items: center;
-margin-top: 50px; border: 1px solid #ddd;
-}
+      .summary-payment-bar {
+        background: #f2f2f2;
+        padding: 30px;
+        border-radius: 25px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 50px;
+        border: 1px solid #ddd;
+      }
 
-.price-details p { margin: 0; color: #555; font-weight: 600; font-size: 16px; }
-.price-details h3 { margin: 5px 0 0 0; font-size: 38px; color: #d71920; font-weight: 700; }
+      .price-details p {
+        margin: 0;
+        color: #555;
+        font-weight: 600;
+        font-size: 16px;
+      }
+      .price-details h3 {
+        margin: 5px 0 0 0;
+        font-size: 38px;
+        color: #d71920;
+        font-weight: 700;
+      }
 
-.action-btns { display: flex; gap: 15px; }
+      .action-btns {
+        display: flex;
+        gap: 15px;
+      }
 
-.btn-edit { background: #e0e0e0; border: none; padding: 15px 25px; border-radius: 15px; cursor: pointer; font-family: 'Kanit'; font-weight: 600; }
+      .btn-edit {
+        background: #e0e0e0;
+        border: none;
+        padding: 15px 25px;
+        border-radius: 15px;
+        cursor: pointer;
+        font-family: "Kanit";
+        font-weight: 600;
+      }
 
-.btn-confirm {
-background: #d71920; color: #fff; border: none;
-padding: 15px 45px; border-radius: 40px; font-size: 18px;
-font-weight: 700; cursor: pointer; box-shadow: 0 8px 20px rgba(215,25,32,0.3);
-font-family: 'Kanit';
-}
+      .btn-confirm {
+        background: #d71920;
+        color: #fff;
+        border: none;
+        padding: 15px 45px;
+        border-radius: 40px;
+        font-size: 18px;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 8px 20px rgba(215, 25, 32, 0.3);
+        font-family: "Kanit";
+      }
 
-@media (max-width: 600px) {
-.selected-datetime { flex-direction: column; }
-.summary-payment-bar { flex-direction: column; gap: 20px; text-align: center; }
-.car-card-active { flex-direction: column; text-align: center; }
-}
-</style>
-</head>
+      @media (max-width: 600px) {
+        .selected-datetime {
+          flex-direction: column;
+        }
+        .summary-payment-bar {
+          flex-direction: column;
+          gap: 20px;
+          text-align: center;
+        }
+        .car-card-active {
+          flex-direction: column;
+          text-align: center;
+        }
+      }
+    </style>
+  </head>
 
-<body>
+  <body>
+    <div class="booking-flow">
+      <section class="step-section">
+        <h2 class="step-title"><span class="step-num">1</span> ข้อมูลรถ</h2>
 
-<div class="booking-flow">
+        <div class="selected-car-card">
+          <div class="car-card-active">
+            <div class="car-status-badge">รถที่ใช้บริการ</div>
 
-<section class="step-section">
-<h2 class="step-title"><span class="step-num">1</span> ข้อมูลรถ</h2>
+            <div class="car-icon-wrapper">
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/744/744465.png"
+              />
+            </div>
 
-<div class="selected-car-card">
-<div class="car-card-active">
+            <div class="car-details">
+              <span class="label">ทะเบียนรถ</span>
+              <strong id="car-plate">-</strong>
 
-<div class="car-status-badge">รถที่ใช้บริการ</div>
+              <span class="label">ยี่ห้อ/รุ่น</span>
+              <p id="car-desc">-</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-<div class="car-icon-wrapper">
-<img src="https://cdn-icons-png.flaticon.com/512/744/744465.png">
-</div>
+      <section class="step-section">
+        <h2 class="step-title">
+          <span class="step-num">2</span> บริการและแพ็กเกจ
+        </h2>
+        <div class="selected-services" id="service-container"></div>
+      </section>
 
-<div class="car-details">
-<span class="label">ทะเบียนรถ</span>
-<strong id="car-plate">-</strong>
+      <section class="step-section">
+        <h2 class="step-title">
+          <span class="step-num">3</span> วันที่และเวลา
+        </h2>
 
-<span class="label">ยี่ห้อ/รุ่น</span>
-<p id="car-desc">-</p>
-</div>
+        <div class="selected-datetime">
+          <div class="dt-badge">
+            <i class="far fa-calendar-alt"></i>
+            <span id="book-date">-</span>
+          </div>
 
-</div>
-</div>
-</section>
+          <div class="dt-badge">
+            <i class="far fa-clock"></i>
+            <span id="book-time">-</span>
+          </div>
+        </div>
+      </section>
 
+      <div class="summary-payment-bar">
+        <div class="price-details">
+          <p>ยอดชำระรวมสุทธิ</p>
+          <h3 id="total-price">0 THB</h3>
+        </div>
 
-<section class="step-section">
-<h2 class="step-title"><span class="step-num">2</span> บริการและแพ็กเกจ</h2>
-<div class="selected-services" id="service-container"></div>
-</section>
+        <div class="action-btns">
+          <button class="btn-edit" onclick="window.history.back()">
+            แก้ไขข้อมูล
+          </button>
+          <button class="btn-confirm" id="confirm-btn">ยืนยันการจอง</button>
+        </div>
+      </div>
+    </div>
 
+    <script>
+      const API_URL = "http://localhost:3000";
 
-<section class="step-section">
-<h2 class="step-title"><span class="step-num">3</span> วันที่และเวลา</h2>
+      document.addEventListener("DOMContentLoaded", () => {
+        const user = JSON.parse(localStorage.getItem("user"));
+        const tempBooking = JSON.parse(localStorage.getItem("tempBooking"));
 
-<div class="selected-datetime">
+        if (!user) {
+          alert("กรุณาเข้าสู่ระบบ");
+          window.location.href = "login.html";
+          return;
+        }
 
-<div class="dt-badge">
-<i class="far fa-calendar-alt"></i>
-<span id="book-date">-</span>
-</div>
+        if (!tempBooking) {
+          alert("ไม่พบข้อมูลการจอง");
+          window.location.href = "bookingnocar.html";
+          return;
+        }
 
-<div class="dt-badge">
-<i class="far fa-clock"></i>
-<span id="book-time">-</span>
-</div>
+        /* แสดงข้อมูลรถ */
+        document.getElementById("car-plate").innerText =
+          tempBooking.car_plate || "-";
 
-</div>
-</section>
+        document.getElementById("car-desc").innerText =
+          `${tempBooking.brand || ""} ${tempBooking.model || ""} (${tempBooking.color || ""})`;
 
+        /* วันที่ เวลา ราคา */
 
-<div class="summary-payment-bar">
+        document.getElementById("book-date").innerText =
+          tempBooking.booking_date || tempBooking.date;
 
-<div class="price-details">
-<p>ยอดชำระรวมสุทธิ</p>
-<h3 id="total-price">0 THB</h3>
-</div>
+        document.getElementById("book-time").innerText =
+          tempBooking.booking_time || tempBooking.time;
 
-<div class="action-btns">
-<button class="btn-edit" onclick="window.history.back()">แก้ไขข้อมูล</button>
-<button class="btn-confirm" id="confirm-btn">ยืนยันการจอง</button>
-</div>
+        document.getElementById("total-price").innerText =
+          `${tempBooking.total_price || tempBooking.totalPrice} THB`;
 
-</div>
+        /* รายการบริการ */
 
-</div>
-
-
-<script>
-
-const API_URL = "http://localhost:3000";
-
-document.addEventListener("DOMContentLoaded", () => {
-
-const user = JSON.parse(localStorage.getItem("user"));
-const tempBooking = JSON.parse(localStorage.getItem("tempBooking"));
-
-if(!user){
-alert("กรุณาเข้าสู่ระบบ");
-window.location.href="login.html";
-return;
-}
-
-if(!tempBooking){
-alert("ไม่พบข้อมูลการจอง");
-window.location.href="bookingnocar.html";
-return;
-}
-
-
-/* แสดงข้อมูลรถ */
-document.getElementById("car-plate").innerText = tempBooking.car_plate || "-";
-
-document.getElementById("car-desc").innerText =
-`${tempBooking.brand || ""} ${tempBooking.model || ""} (${tempBooking.color || ""})`;
-
-
-/* วันที่ เวลา ราคา */
-
-document.getElementById("book-date").innerText =
-tempBooking.booking_date || tempBooking.date;
-
-document.getElementById("book-time").innerText =
-tempBooking.booking_time || tempBooking.time;
-
-document.getElementById("total-price").innerText =
-`${tempBooking.total_price || tempBooking.totalPrice} THB`;
-
-
-/* รายการบริการ */
-
-let html = `
+        let html = `
 <div class="service-summary-item main-service">
 <div class="service-info">
 <i class="fas fa-check-circle"></i>
@@ -228,9 +347,9 @@ let html = `
 </div>
 `;
 
-if(tempBooking.addons){
-tempBooking.addons.forEach(addon=>{
-html += `
+        if (tempBooking.addons) {
+          tempBooking.addons.forEach((addon) => {
+            html += `
 <div class="service-summary-item">
 <div class="service-info">
 <i class="fas fa-plus-circle" style="color:#888;"></i>
@@ -239,58 +358,48 @@ html += `
 <span style="font-size:12px;color:#888;">รวมในยอดสุทธิ</span>
 </div>
 `;
-});
-}
+          });
+        }
 
-document.getElementById("service-container").innerHTML = html;
+        document.getElementById("service-container").innerHTML = html;
 
+        /* ปุ่มยืนยัน */
 
-/* ปุ่มยืนยัน */
+        document
+          .getElementById("confirm-btn")
+          .addEventListener("click", async () => {
+            const finalData = {
+              user_id: user.user_id,
+              service_name: tempBooking.service_name || tempBooking.serviceName,
+              addons: tempBooking.addons || [],
+              total_price: parseInt(
+                tempBooking.total_price || tempBooking.totalPrice,
+              ),
+              booking_date: tempBooking.booking_date || tempBooking.date,
+              booking_time: tempBooking.booking_time || tempBooking.time,
+            };
 
-document.getElementById("confirm-btn").addEventListener("click", async ()=>{
+            try {
+              const res = await fetch(`${API_URL}/bookings/create`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(finalData),
+              });
 
-const finalData = {
-user_id: user.user_id,
-service_name: tempBooking.service_name || tempBooking.serviceName,
-addons: tempBooking.addons || [],
-total_price: parseInt(tempBooking.total_price || tempBooking.totalPrice),
-booking_date: tempBooking.booking_date || tempBooking.date,
-booking_time: tempBooking.booking_time || tempBooking.time
-};
+              if (res.ok) {
+                alert("การจองสำเร็จ");
 
-try{
+                localStorage.removeItem("tempBooking");
 
-const res = await fetch(`${API_URL}/bookings/create`,{
-method:"POST",
-headers:{ "Content-Type":"application/json"},
-body: JSON.stringify(finalData)
-});
-
-if(res.ok){
-
-alert("การจองสำเร็จ");
-
-localStorage.removeItem("tempBooking");
-
-window.location.href="index.html";
-
-}else{
-
-alert("ไม่สามารถบันทึกการจองได้");
-
-}
-
-}catch(err){
-
-alert("Server error");
-
-}
-
-});
-
-});
-
-</script>
-
-</body>
+                window.location.href = "index.html";
+              } else {
+                alert("ไม่สามารถบันทึกการจองได้");
+              }
+            } catch (err) {
+              alert("Server error");
+            }
+          });
+      });
+    </script>
+  </body>
 </html>
