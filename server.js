@@ -145,7 +145,7 @@ function authMiddleware(req, res, next) {
 }
 
 // API สำหรับดึงข้อมูลผู้ใช้ตาม user_id ทำส่วนหน้าโปรไฟล์ของผู้ใช้
-app.get("/users/:id", async (req, res) => {
+app.get("/users/:id", authMiddleware, async (req, res) => {
 
   // เชื่อม collection users ใน MongoDB
   const db = mongoose.connection.collection("users");
@@ -184,7 +184,7 @@ app.get("/users/:id", async (req, res) => {
 });
 
 // API สำหรับแก้ไขข้อมูลผู้ใช้ ทำส่วนหน้าโปรไฟล์ของผู้ใช้
-app.put("/users/:id", async (req, res) => {
+app.put("/users/:id", authMiddleware, async (req, res) => {
 
   // เชื่อม collection users
   const db = mongoose.connection.collection("users");
