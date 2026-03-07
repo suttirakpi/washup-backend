@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WASH UP - สมัครสมาชิกใหม่</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'kanit',  sans-serif; }
+        body {
+            background-color: #F5F5F5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            background-color: #fff;
+            width: 95%;
+            max-width: 1000px;
+            height: 650px;
+            border-radius: 40px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        .image-section {
+            flex: 1;
+            background-image: url('https://media.istockphoto.com/id/1287044692/th/%E0%B8%A3%E0%B8%B9%E0%B8%9B%E0%B8%96%E0%B9%88%E0%B8%B2%E0%B8%A2/%E0%B8%84%E0%B8%99%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B8%A5%E0%B9%89%E0%B8%B2%E0%B8%87%E0%B8%A3%E0%B8%96%E0%B8%AA%E0%B8%B5%E0%B9%81%E0%B8%94%E0%B8%87%E0%B8%94%E0%B9%89%E0%B8%A7%E0%B8%A2%E0%B8%9F%E0%B8%AD%E0%B8%87%E0%B8%99%E0%B9%89%E0%B9%8D%E0%B8%B2%E0%B8%9A%E0%B8%99%E0%B8%A5%E0%B9%89%E0%B8%B2%E0%B8%87%E0%B8%A3%E0%B8%96.jpg?s=612x612&w=0&k=20&c=QlD8gucdRSZVFyBQwTv4X0nXNwdGNzKCJxrzN6T7_eE=');
+            background-size: cover;
+            background-position: center;
+            border-radius: 40px; 
+            margin: 15px;
+            background-color: #ddd;
+        }
+
+        .form-section {
+            flex: 1.2;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        h2 {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            color: #000;
+        }
+
+        .input-group {
+            margin-bottom: 18px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #333;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 12px 45px 12px 15px;
+            background-color: #fff;
+            border: 1px solid #E0E0E0;
+            border-radius: 12px;
+            font-size: 14px;
+            color: #333;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .input-wrapper input:focus {
+            border-color: #D71920;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #C0C0C0;
+            font-size: 18px;
+        }
+
+        .register-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: #D71920;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+
+        .register-btn:hover {
+            background-color: #B3141A;
+        }
+
+        .footer-text {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 13px;
+            color: #888;
+        }
+
+        .footer-text a {
+            color: #D71920;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        @media (max-width: 800px) {
+            .image-section { display: none; }
+            .container { max-width: 450px; height: auto; border-radius: 20px; }
+            .form-section { padding: 40px 25px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="image-section"></div>
+
+        <div class="form-section">
+            <h2>สมัครสมาชิกใหม่</h2>
+            
+            <form id="registerForm">
+                <div class="input-group">
+                    <label>ชื่อ - นามสกุล</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="fullName" placeholder="กรอกชื่อ-นามสกุล เช่น สมชาติ ดีใจ" required>
+                        <i class="fa-regular fa-user"></i>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>ชื่อผู้ใช้งาน</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="username" placeholder="กรอกชื่อผู้ใช้ (Username)" required>
+                        <i class="fa-regular fa-user"></i>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>เบอร์โทร</label>
+                    <div class="input-wrapper">
+                        <input type="tel" id="phone" placeholder="09X-XXX-XXXX" required>
+                        <i class="fa-solid fa-phone"></i>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>รหัสผ่าน</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="password" placeholder="ตั้งรหัสผ่าน" required>
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>ยืนยันรหัสผ่านอีกครั้ง</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="confirmPassword" placeholder="ยืนยันรหัสผ่าน" required>
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                </div>
+
+                <button type="submit" class="register-btn">สมัครสมาชิก</button>
+            </form>
+
+            <p class="footer-text">มีสมาชิกแล้วใช่ไหม? <a href="login.html">เข้าสู่ระบบ</a></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const fullname = document.getElementById('fullName').value;
+            const login_name = document.getElementById('username').value;
+            const phone = document.getElementById('phone').value;
+            const login_password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (login_password !== confirmPassword) {
+                alert("รหัสผ่านไม่ตรงกัน!");
+                return;
+            }
+
+            try {
+                // เชื่อมต่อที่ Port 3000 และใช้ Path /users/register ตามโค้ด Backend
+                const response = await fetch('http://localhost:3000/users/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        fullname, 
+                        login_name, 
+                        phone, 
+                        login_password 
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert('สมัครสมาชิกสำเร็จ!');
+                    window.location.href = 'login.html';
+                } else {
+                    // แสดงข้อความ Error จาก Backend เช่น "Username already exists"
+                    alert(data.message || 'เกิดข้อผิดพลาดในการสมัครสมาชิก');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ (ตรวจสอบว่ารัน Node.js หรือยัง)');
+            }
+        });
+    </script>
+</body>
+</html>

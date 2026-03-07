@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WASH UP - สัมผัสความเงางามระดับพรีเมียม</title>
+   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Kanit:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { 
+        margin: 0; 
+        padding: 0; 
+        box-sizing: border-box; 
+        font-family: 'Kanit', sans-serif; /* ใส่ Kanit สำรองไว้สำหรับภาษาไทย */
+        }
+        body { background-color: #fff; overflow-x: hidden; }
+        
+        /* Navbar */
+        nav {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 10%; background: #fff; position: sticky; top: 0; z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .logo img { height: 60px; }
+        .nav-links { display: flex; gap: 30px; align-items: center; }
+        .nav-links a { text-decoration: none; color: #333; font-weight: 500; font-size: 16px; transition: 0.3s; }
+        .nav-links a.active { color: #d71920; border-bottom: 2px solid #d71920; }
+        .nav-links a:hover { color: #d71920; }
+        .auth-links a { font-weight: 700; text-transform: uppercase; text-decoration: none; }
+        .login-link { color: #d71920; margin-right: 20px; }
+        .register-link { color: #d71920; }
+
+        /* Hero Section (image_4de246.png) */
+        .hero { display: flex; height: 500px; width: 100%; }
+        .hero-left { 
+            flex: 1; background-color: #d71920; color: white; 
+            display: flex; flex-direction: column; justify-content: center; padding: 0 5% 0 10%;
+        }
+        .hero-right {
+    flex: 1;
+    /* บอก CSS ว่าให้เข้าไปที่โฟลเดอร์ images ก่อน แล้วค่อยหาไฟล์ washhome.jpeg */
+    background: url('image/washhome.jpg'); 
+    background-size: cover; 
+    background-position: center;
+    background-repeat: no-repeat;
+}
+        .hero-left h1 { font-size: 42px; font-weight: 700; line-height: 1.2; margin-bottom: 20px; }
+        .hero-left p { font-size: 16px; font-weight: 300; line-height: 1.6; margin-bottom: 30px; opacity: 0.9; }
+        .btn-booking-hero { background: white; color: #d71920; padding: 12px 30px; border-radius: 50px; text-decoration: none; font-weight: 600; width: fit-content; transition: 0.3s; }
+        .btn-booking-hero:hover { transform: scale(1.05); }
+
+        /* Why WASH-UP (image_4de246.png) */
+        .why-section { padding: 80px 10%; text-align: center; }
+        .section-title { font-size: 28px; font-weight: 700; margin-bottom: 50px; position: relative; display: inline-block; }
+        .section-title::after { content: ""; display: block; width: 80%; height: 3px; background: #d71920; margin: 10px auto 0; }
+        .why-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+        .why-card { background: #fdfdfd; padding: 40px 25px; border-radius: 20px; border: 1px solid #eee; transition: 0.3s; }
+        .why-card:hover { transform: translateY(-10px); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .icon-circle { width: 70px; height: 70px; background: #d71920; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 30px; margin: 0 auto 20px; }
+        .why-card h3 { font-size: 20px; margin-bottom: 15px; }
+        .why-card p { font-size: 14px; color: #666; line-height: 1.6; }
+
+        /* About & Highlight (image_4de228.png) */
+        .about-red { background: #d71920; color: white; padding: 60px 10%; text-align: center; }
+        .about-red h2 { font-size: 28px; margin-bottom: 20px; }
+        .about-red p { font-size: 15px; font-weight: 300; line-height: 1.8; max-width: 850px; margin: 0 auto; opacity: 0.9; }
+
+        .highlight-wrap { display: flex; padding: 80px 10%; align-items: center; gap: 50px; }
+        .highlight-text { flex: 1.2; }
+        .highlight-text h2 { font-size: 28px; margin-bottom: 20px; }
+        .highlight-text p { font-size: 15px; color: #555; line-height: 1.8; }
+        .highlight-img { flex: 1; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .highlight-img img { width: 100%; display: block; }
+
+        /* Steps Section (image_4de228.png) */
+        .steps-bg { background-color: #fff1f1; padding: 80px 10%; text-align: center; }
+        .steps-bg h2 { font-size: 26px; margin-bottom: 10px; }
+        .steps-bg p.sub { margin-bottom: 50px; color: #666; }
+        .steps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 40px; }
+        .step-box { background: white; padding: 40px 15px; border-radius: 15px; position: relative; }
+        .step-icon { width: 80px; height: 80px; border: 2px solid #ffcfcf; border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 30px; color: #d71920; position: relative; }
+        .step-num { position: absolute; top: 0; right: 0; background: #d71920; color: white; width: 25px; height: 25px; border-radius: 50%; font-size: 14px; font-weight: bold; display: flex; align-items: center; justify-content: center; }
+        .btn-main-booking { background: #d71920; color: white; padding: 12px 50px; border-radius: 10px; text-decoration: none; font-weight: 600; font-size: 18px; display: inline-block; transition: 0.3s; }
+
+        /* Package Section (image_4de206.png) */
+        .package-section { padding: 80px 10%; text-align: center; }
+        .package-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; align-items: flex-start; }
+        .package-card { background: white; padding: 40px 30px; border-radius: 20px; border: 1px solid #eee; text-align: center; position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.02); }
+        .package-card.popular { border: 2px solid #d71920; transform: scale(1.05); }
+        .popular-badge { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); background: #d71920; color: white; padding: 5px 25px; border-radius: 8px; font-weight: 600; font-size: 14px; }
+        .package-card h3 { font-size: 18px; margin-bottom: 15px; color: #333; }
+        .package-card .price { font-size: 42px; font-weight: 700; color: #d71920; margin-bottom: 25px; }
+        .package-card ul { list-style: none; text-align: left; margin-bottom: 30px; }
+        .package-card ul li { font-size: 13px; color: #666; margin-bottom: 12px; display: flex; align-items: center; }
+        .package-card ul li i { color: #d71920; margin-right: 10px; font-size: 10px; }
+        .btn-select { background: #d71920; color: white; padding: 12px 0; width: 100%; border-radius: 10px; text-decoration: none; font-weight: 600; display: inline-block; }
+
+        /* Ready Call to Action (image_4de206.png) */
+        .ready-bg { 
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?q=80&w=1500&auto=format&fit=crop');
+            background-size: cover; background-position: center; padding: 100px 10%; text-align: center; color: white;
+        }
+        .ready-bg h2 { font-size: 32px; font-weight: 700; margin-bottom: 30px; }
+        .ready-btns { display: flex; justify-content: center; gap: 20px; }
+        .btn-cta { padding: 12px 40px; border-radius: 50px; text-decoration: none; font-weight: 600; transition: 0.3s; }
+        .btn-cta.reg { background: #d71920; color: white; }
+        .btn-cta.log { background: white; color: #d71920; }
+
+        /* Footer (image_4de206.png) */
+        footer { background: #1a1a1a; color: white; padding: 60px 10% 20px; }
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 50px; margin-bottom: 40px; }
+        .footer-info img { height: 50px; margin-bottom: 20px; }
+        .footer-info p { color: #888; font-size: 13px; line-height: 1.6; }
+        .footer-links h4 { margin-bottom: 20px; font-size: 18px; }
+        .footer-links ul { list-style: none; }
+        .footer-links li { margin-bottom: 10px; }
+        .footer-links a { color: #888; text-decoration: none; font-size: 14px; transition: 0.3s; }
+        .footer-links a:hover { color: #d71920; }
+        .socials { display: flex; gap: 15px; margin-top: 15px; }
+        .socials a { font-size: 22px; color: white; }
+
+        @media (max-width: 900px) {
+            .hero, .highlight-wrap { flex-direction: column; height: auto; }
+            .hero-left { padding: 60px 10%; }
+            .why-grid, .steps-grid, .package-grid, .footer-grid { grid-template-columns: 1fr; }
+            .package-card.popular { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo"><img src="image/logowashup.png" alt="WASH UP"></div>
+        <div class="nav-links">
+            <a href="index.html" class="active">หน้าแรก</a>
+            <a href="bookingnocar.html">จองบริการ</a> 
+            <a href="#">ประวัติ</a>
+    
+    <div class="auth-links" id="auth-section">
+        <a href="login.html" class="login-link">LOGIN</a>
+        <a href="register.html" class="register-link">REGISTER</a>
+           <div class="auth-links" id="auth-section">
+   
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // 1. ตรวจสอบสถานะการเข้าสู่ระบบ
+        const userData = localStorage.getItem('user');
+        const authSection = document.getElementById('auth-section');
+
+        if (userData) {
+            const user = JSON.parse(userData);
+            // แสดงชื่อ User และปุ่ม Logout
+            authSection.innerHTML = `
+                <span style="color: #333; font-weight: 500; margin-right: 15px;">
+                    <i class="fas fa-user-circle"></i> ${user.fullname}
+                </span>
+                <a href="#" id="logoutBtn" class="login-link" style="font-size: 14px;">LOGOUT</a>
+            `;
+
+            // ฟังก์ชัน Logout
+            document.getElementById('logoutBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                if(confirm('คุณต้องการออกจากระบบใช่หรือไม่?')) {
+                    localStorage.removeItem('user');
+                    location.reload();
+                }
+            });
+        }
+
+        // 2. จัดการการคลิกปุ่มจองคิว (Redirect ไปหน้าจองหรือหน้า Login)
+        // เพิ่ม class 'booking-btn' ให้กับทุกลิงก์ที่เกี่ยวกับการจอง
+        const bookingButtons = document.querySelectorAll('.btn-booking-hero, .btn-main-booking, .btn-select');
+        
+        bookingButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (!localStorage.getItem('user')) {
+                    alert('กรุณาเข้าสู่ระบบก่อนทำการจองบริการ');
+                    window.location.href = 'login.html';
+                } else {
+                    // ถ้าล็อกอินแล้ว ให้ไปที่หน้าจอง (ระบุไฟล์หน้าจองของคุณที่นี่)
+                    window.location.href = 'bookingnocar.html'; 
+                }
+            });
+        });
+    });
+</script>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-left">
+            <h1>สัมผัสความเงางาม<br>ระดับพรีเมียม<br>โดยไม่ต้องเสียเวลารอคิว</h1>
+            <p>WASH UP ระบบจองคิวล้างรถ เลือกรถ เลือกบริการ และระบุเวลาที่คุณสะดวก พร้อมติดตามสถานะแบบ REAL-TIME เพื่อประสบการณ์ที่ดีที่สุดของคุณ</p>
+           <a href="booking.html" class="btn-booking-hero">จองคิวล้างรถทันที</a>
+        </div>
+        <div class="hero-right"></div>
+    </section>
+
+    <section class="why-section">
+        <h2 class="section-title">ทำไมต้องใช้ WASH-UP?</h2>
+        <div class="why-grid">
+            <div class="why-card">
+                <div class="icon-circle"><i class="fas fa-car"></i></div>
+                <h3>รองรับรถได้ทุกประเภท</h3>
+                <p>เพิ่มและจัดการข้อมูลรถของคุณได้หลายคัน ระบบคำนวณราคาให้ตรงตามไซส์รถเป๊ะๆ</p>
+            </div>
+            <div class="why-card">
+                <div class="icon-circle"><i class="fas fa-broom"></i></div>
+                <h3>เลือกบริการได้ดั่งใจ</h3>
+                <p>ไม่ว่าจะล้างสี ดูดฝุ่น หรือเคลือบแก้ว ก็สามารถกดเลือกมิกซ์แอนด์แมทช์ได้ในบิลเดียว</p>
+            </div>
+            <div class="why-card">
+                <div class="icon-circle"><i class="fas fa-mobile-alt"></i></div>
+                <h3>รู้สถานะแบบ REAL-TIME</h3>
+                <p>ติดตามความคืบหน้าของรถคุณได้ตลอดเวลาตั้งแต่เริ่มล้างจนจบงาน</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="about-red">
+        <h2>รู้จักกับ WASH UP</h2>
+        <p>ที่ WASH UP เราเชื่อว่ารถที่เงางามคือภาพสะท้อนของความภาคภูมิใจและรายละเอียดที่ใส่ใจ เราจึงมุ่งมั่นมอบบริการดูแลรถยนต์ที่เหนือกว่าการล้างทำความสะอาดทั่วไป ด้วยทีมงานมืออาชีพและระบบจัดการคิวที่ทันสมัย เพื่อให้รถทุกคันที่ผ่านการดูแลจากเราเปล่งประกายในแบบที่ควรจะเป็น</p>
+    </section>
+
+    <section class="highlight-wrap">
+        <div class="highlight-text">
+            <h2>ไฮไลท์บริการ</h2>
+            <p>บริการล้างสีและดูแลสภาพภายนอกของเรา ขจัดคราบฝุ่นและสิ่งสกปรกฝังลึกได้อย่างหมดจด ด้วยน้ำยาทำความสะอาดสูตรถนอมสีรถและเทคโนโลยีการฉีดล้างที่ได้มาตรฐาน เราเน้นปกป้องพื้นผิวพร้อมมอบความเงางามที่โดดเด่นในทุกมุมมอง ไม่ว่าจะเป็นการล้างทำความสะอาดทั่วไป หรือเตรียมผิวรถก่อนการเคลือบเงา</p>
+        </div>
+        <div class="highlight-img">
+            <img src="https://img.freepik.com/premium-photo/worker-washing-red-car-with-sponge-car-wash_179755-10324.jpg">
+        </div>
+    </section>
+
+    <section class="steps-bg">
+        <h2>วิธีการใช้บริการ</h2>
+        <p class="sub">4 ขั้นตอนง่ายๆ ในการจองคิว</p>
+        <div class="steps-grid">
+            <div class="step-box">
+                <div class="step-icon"><i class="fas fa-car"></i><div class="step-num">1</div></div>
+                <h4>เลือกรถของคุณ</h4>
+            </div>
+            <div class="step-box">
+                <div class="step-icon"><i class="fas fa-list-check"></i><div class="step-num">2</div></div>
+                <h4>เลือกบริการ</h4>
+            </div>
+            <div class="step-box">
+                <div class="step-icon"><i class="fas fa-clock"></i><div class="step-num">3</div></div>
+                <h4>ระบุเวลาที่สะดวก</h4>
+            </div>
+            <div class="step-box">
+                <div class="step-icon"><i class="fas fa-car-side"></i><div class="step-num">4</div></div>
+                <h4>รับรถ</h4>
+            </div>
+        </div>
+        <a href="#" class="btn-main-booking">จองคิวล้างรถ</a>
+    </section>
+
+    <section class="package-section">
+        <h2 class="section-title">แพ็กเกจบริการยอดนิยม</h2>
+        <div class="package-grid">
+            <div class="package-card">
+                <h3>ล้างอัดฉีด - ฉีดล้างช่วงล่าง</h3>
+                <p style="font-size: 12px; color: #888; margin-bottom: 15px;">ดูแลความสะอาดล้างอัดฉีด รวมไปถึงใต้ท้องรถ และ ซุ้มล้อ</p>
+                <div class="price">250.-</div>
+                <ul>
+                    <li><i class="fas fa-check"></i> ฉีดล้างโคลนใต้ท้องรถ</li>
+                    <li><i class="fas fa-check"></i> ฉีดล้างซุ้มล้อ</li>
+                </ul>
+                <a href="#" class="btn-select">ขอจองบริการนี้</a>
+            </div>
+
+            <div class="package-card popular">
+                <div class="popular-badge">ยอดนิยม</div>
+                <h3>ล้างสี - ดูดฝุ่น</h3>
+                <p style="font-size: 12px; color: #888; margin-bottom: 15px;">ดูแลความสะอาดพื้นฐาน รวดเร็ว ประหยัดเวลาสำหรับรถเก๋ง</p>
+                <div class="price">150.-</div>
+                <ul>
+                    <li><i class="fas fa-check"></i> ล้างทำความสะอาดภายนอก</li>
+                    <li><i class="fas fa-check"></i> ทำความสะอาดล้อและยาง</li>
+                    <li><i class="fas fa-check"></i> ดูดฝุ่นภายในรถ</li>
+                    <li><i class="fas fa-check"></i> เช็ดกระจกทั้งนอกและภายใน</li>
+                </ul>
+                <a href="#" class="btn-select">ขอจองบริการนี้</a>
+            </div>
+
+            <div class="package-card">
+                <h3>ล้างสี - ดูดฝุ่น + เคลือบแว็กซ์</h3>
+                <p style="font-size: 12px; color: #888; margin-bottom: 15px;">ดูแลความสะอาดหมดจด พร้อมเพิ่มความเงางามและปกป้องสีรถ</p>
+                <div class="price">300.-</div>
+                <ul>
+                    <li><i class="fas fa-check"></i> ล้างทำความสะอาดภายนอกและดูดฝุ่น</li>
+                    <li><i class="fas fa-check"></i> ลงแว็กซ์เคลือบเงาสูตรพรีเมียม</li>
+                    <li><i class="fas fa-check"></i> เช็ดทำความสะอาดกระจกและคอนโซล</li>
+                    <li><i class="fas fa-check"></i> เคลือบเงายางและทำความสะอาดล้อ</li>
+                    <li><i class="fas fa-check"></i> พ่นน้ำหอมปรับอากาศในห้องโดยสาร</li>
+                </ul>
+                <a href="#" class="btn-select">ขอจองบริการนี้</a>
+            </div>
+        </div>
+    </section>
+
+   
+
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-info">
+                <img src="image/logowashup.png" alt="WASH UP">
+                <p>ระบบจองคิวล้างรถออนไลน์ที่ทันสมัยที่สุด มอบความสะดวกและบริการระดับมืออาชีพให้กับรถของคุณ</p>
+            </div>
+            <div class="footer-links">
+                <h4>ระบบจองคิวล้างรถ</h4>
+                <ul>
+                    <li><a href="#">หน้าแรก</a></li>
+                    <li><a href="#">จองบริการล้างรถ</a></li>
+                    <li><a href="#">เข้าสู่ระบบ</a></li>
+                    <li><a href="#">สมัครสมาชิก</a></li>
+                    <li><a href="#">ประวัติ</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>ติดต่อเรา</h4>
+                <div class="socials">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-tiktok"></i></a>
+                </div>
+            </div>
+        </div>
+        <p style="text-align: center; color: #555; font-size: 12px; padding-top: 20px; border-top: 1px solid #333;">© 2024 WASH UP. All Rights Reserved.</p>
+    </footer>
+
+</body>
+</html>

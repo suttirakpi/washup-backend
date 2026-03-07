@@ -1,0 +1,186 @@
+<div id="addCarModal" class="modal-overlay">
+    <div class="modal-content">
+        <header class="modal-header">
+            <h2>เพิ่มรถของคุณ</h2>
+            <p>ใส่รายละเอียดรถของคุณเพื่อใช้บริการร้าน WASH UP</p>
+        </header>
+
+        <form class="car-form" id="carRegistrationForm">
+            <div class="form-group">
+                <label><span class="num-badge">1</span> ทะเบียนรถยนต์</label>
+                <input type="text" id="car_plate" placeholder="กรอกทะเบียนรถ เช่น กข 1234 กรุงเทพฯ" required>
+            </div>
+
+            <div class="form-group">
+                <label><span class="num-badge">2</span> ประเภทรถของคุณ</label>
+                <div class="radio-group">
+                    <label class="radio-item active">
+                        <input type="radio" name="car_type" value="Sedan" checked>
+                        <span class="dot"></span> รถเก๋ง
+                    </label>
+                    <label class="radio-item">
+                        <input type="radio" name="car_type" value="SUV/Pickup">
+                        <span class="dot"></span> รถกระบะ / SUV
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label><span class="num-badge">3</span> แบรนด์รถ</label>
+                    <input type="text" id="brand" placeholder="เช่น HONDA, TOYOTA" required>
+                </div>
+                <div class="form-group">
+                    <label><span class="num-badge">4</span> รุ่นรถ</label>
+                    <input type="text" id="model" placeholder="เช่น CIVIC, YARIS" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label><span class="num-badge">5</span> สีรถ</label>
+                <input type="text" id="color" placeholder="ระบุสีรถ เช่น ดำ, ขาว" required>
+            </div>
+
+            <div class="form-group">
+                <label><span class="num-badge">6</span> โน๊ตเพิ่มเติม <span>(ไม่บังคับ)</span></label>
+                <input type="text" id="note" placeholder="ระบุข้อมูลเพิ่มเติม (ถ้ามี)">
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="window.history.back()">ยกเลิก</button>
+                <button type="submit" class="btn-save">+ บันทึกข้อมูลรถ</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // ดึงข้อมูล User จาก LocalStorage (ถ้ามี)
+        const user = JSON.parse(localStorage.getItem('user'));
+        
+        const radioItems = document.querySelectorAll('.radio-item');
+
+        // Logic การเลือกประเภทรถ (Active State)
+        radioItems.forEach(item => {
+            item.addEventListener('click', () => {
+                radioItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                item.querySelector('input').checked = true;
+            });
+        });
+
+        // Logic การ Submit ข้อมูล
+        document.getElementById('carRegistrationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const carData = {
+                user_id: user ? user.user_id : null, // ส่ง id ของคนล็อกอินไป
+                car_plate: document.getElementById('car_plate').value,
+                car_type: document.querySelector('input[name="car_type"]:checked').value,
+                brand: document.getElementById('brand').value.toUpperCase(),
+                model: document.getElementById('model').value.toUpperCase(),
+                color: document.getElementById('color').value,
+                note: document.getElementById('note').value
+            };
+
+            console.log('Sending data:', carData);
+
+            try {
+                const response = await fetch('http://localhost:3000/cars/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(carData)
+                });
+
+                if (response.ok) {
+                    alert('เพิ่มรถสำเร็จแล้ว!');
+                    window.location.href = 'booking.html'; 
+                } else {
+                    alert('บันทึกไม่สำเร็จ กรุณาลองใหม่');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้');
+            }
+        });
+    });
+</script>
+
+<style>
+    /* CSS ยังคงความสวยงามเหมือนเดิม */
+    .modal-overlay {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5);
+        display: flex; align-items: center; justify-content: center;
+        z-index: 1000;
+    }
+
+    .modal-content {
+        background: #fff;
+        width: 90%;
+        max-width: 450px;
+        padding: 30px;
+        border-radius: 25px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+    .modal-header h2 { font-size: 22px; color: #111; margin-bottom: 5px; }
+    .modal-header p { font-size: 13px; color: #666; margin-bottom: 25px; }
+
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+    .form-group label span { font-size: 11px; color: #aaa; font-weight: normal; }
+
+    .num-badge {
+    background: #d71920; /* สีแดงเดิมของคุณ */
+    color: #ffffff;      /* สีขาวสะอาด */
+    width: 24px;         /* เพิ่มขนาดจาก 20px เป็น 24px ให้วงกลมชัดขึ้น */
+    height: 24px;        /* ต้องเท่ากับ width เพื่อให้เป็นวงกลมเป๊ะๆ */
+    border-radius: 50%;
+    display: inline-flex; 
+    align-items: center; 
+    justify-content: center;
+    
+    /* ส่วนที่ทำให้ชัดขึ้น */
+    font-size: 13px !important; /* ขยายขนาดตัวเลข */
+    font-weight: 700;           /* ปรับให้ตัวเลขหนาขึ้น (Bold) จะช่วยแก้เรื่องความเบลอ */
+    line-height: 1;             /* จัดระเบียบระยะบรรทัดให้ตัวเลขอยู่กึ่งกลางพอดี */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* เพิ่มเงาจางๆ ให้ดูมีมิติและคมชัดขึ้น */
+}
+
+    input[type="text"] {
+        width: 100%;
+        padding: 12px 18px;
+        background: #f5f5f5;
+        border: 1px solid #eee;
+        border-radius: 25px;
+        font-size: 14px;
+        outline: none;
+        box-sizing: border-box;
+    }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .radio-group { display: flex; gap: 10px; }
+    .radio-item {
+        flex: 1; padding: 10px;
+        background: #f5f5f5; border: 2px solid transparent;
+        border-radius: 20px; display: flex; align-items: center;
+        gap: 8px; font-size: 13px; color: #999; cursor: pointer; transition: 0.2s;
+    }
+    .radio-item.active { background: #fff5f5; border-color: #d71920; color: #d71920; }
+    .radio-item input { display: none; }
+    .dot { width: 12px; height: 12px; border: 2px solid #ccc; border-radius: 50%; position: relative; }
+    .radio-item.active .dot { border-color: #d71920; }
+    .radio-item.active .dot::after {
+        content: ""; width: 6px; height: 6px; background: #d71920;
+        border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    }
+
+    .modal-footer { display: flex; gap: 12px; margin-top: 25px; }
+    .btn-cancel, .btn-save { flex: 1; padding: 12px; border: none; border-radius: 25px; font-weight: 600; cursor: pointer; }
+    .btn-cancel { background: #eee; color: #666; }
+    .btn-save { background: #d71920; color: #fff; }
+</style>

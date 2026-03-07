@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WASH UP - เข้าสู่ระบบ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'kanit',  sans-serif; }
+
+        body {
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .main-container {
+            display: flex;
+            background-color: #fff;
+            width: 90%;
+            max-width: 1000px;
+            height: 600px;
+            border-radius: 25px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        /* ส่วนรูปภาพฝั่งซ้าย */
+        .image-side {
+            flex: 1;
+            background: url('https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?auto=format&fit=crop&w=1000&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* ส่วนฟอร์มฝั่งขวา */
+        .form-side {
+            flex: 1;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* --- ส่วนโลโก้ WASH UP --- */
+        .logo-container {
+            text-align: center;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+
+        .logo-container img {
+            width: 200px;
+            height: auto;
+            object-fit: contain;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+            text-align: center;
+        }
+
+        .welcome-text {
+            text-align: center;
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .input-box {
+            position: relative;
+        }
+
+        .input-box input {
+            width: 100%;
+            padding: 12px 15px 12px 40px;
+            background-color: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .input-box input:focus {
+            border-color: #d71920;
+            background-color: #fff;
+            outline: none;
+        }
+
+        .input-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+            font-size: 16px;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background-color: #d71920;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+
+        .login-btn:hover {
+            background-color: #b3141a;
+        }
+
+        .register-text {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 13px;
+            color: #777;
+        }
+
+        .register-text a {
+            color: #d71920;
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <div class="image-side"></div>
+
+        <div class="form-side">
+            <div class="logo-container">
+                <img src="image/logowashup.png" alt="WASH UP Logo" onerror="this.style.display='none'">
+            </div>
+
+            <h2>เข้าสู่ระบบ</h2>
+            <p class="welcome-text">ยินดีต้อนรับสู่เว็บไซต์ WASH UP</p>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>ชื่อผู้ใช้งาน</label>
+                    <div class="input-box">
+                        <input type="text" id="username" placeholder="กรอกชื่อผู้ใช้ของคุณ" required>
+                        <i class="fa-regular fa-user"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>รหัสผ่าน</label>
+                    <div class="input-box">
+                        <input type="password" id="password" placeholder="กรอกรหัสผ่านของคุณ" required>
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                </div>
+
+                <button type="submit" class="login-btn">เข้าสู่ระบบ</button>
+            </form>
+
+            <p class="register-text">ยังไม่มีสมาชิกใช่ไหม? <a href="register.html">สมัครสมาชิก</a></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const login_name = document.getElementById('username').value;
+            const login_password = document.getElementById('password').value;
+
+            try {
+                // เชื่อมต่อไปยัง Backend Path /users/login ตามที่เขียนไว้ใน server.js
+                const response = await fetch('http://localhost:3000/users/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ login_name, login_password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('เข้าสู่ระบบสำเร็จ!');
+                    // เก็บข้อมูล User เบื้องต้นไว้ใน localStorage เพื่อใช้ในหน้าอื่นๆ
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    // เปลี่ยนหน้าไปยังหน้าหลัก (แก้ไขชื่อไฟล์ตามที่คุณมี เช่น index.html)
+                    window.location.href = 'index.html'; 
+                } else {
+                    // แสดงข้อความ Error เช่น "user not found" หรือ "wrong password"
+                    alert(data.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้');
+            }
+        });
+    </script>
+
+</body>
+</html>
