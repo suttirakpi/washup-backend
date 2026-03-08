@@ -400,6 +400,35 @@ app.delete("/vehicles/:id", authMiddleware, async (req, res) => {
 
 });
 
+    //services // API สำหรับดึงข้อมูลประเภทบริการล้างรถทั้งหมด
+app.get("/service", async (req, res) => {
+  const db = mongoose.connection.collection("service");
+  try{
+    const services = await db.find({ is_active: true }).toArray();
+    res.json(services);
+  } catch (error) {
+    res.status(500).json({
+      message: "server error"
+    });
+  }
+});
+
+ //service-prices // API สำหรับดึงข้อมูลราคาบริการล้างรถทั้งหมด
+ app.get("/service-prices", async (req, res) => {
+  const db = mongoose.connection.collection("service_prices");
+  try{
+    const prices  = await db.find({ }).toArray();
+    res.json(prices);
+  }catch (error) {
+  res.status(500).json({
+    message: "server error"
+  });
+ }
+});
+
+
+
+
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
