@@ -10,109 +10,287 @@
   <body>
     <div class="kanban-board">
       <div class="kanban-col">
-        <div class="col-header header-gray">
-          <span>⏳</span> รอยืนยัน (1 คิว)
-        </div>
-        <div class="col-body">
-          <div class="job-card">
-            <div class="card-top">
-              <span class="job-id">JOB CARD #4012</span>
-              <span class="status-text text-gray">รอยืนยัน</span>
-            </div>
-            <h3 class="car-title">NISSAN ALMERA</h3>
-            <p class="car-plate">ขค 1122 กทม.</p>
-            <div class="card-detail">
-              <p>📅 ต้องการคิว: 21 มี.ค. | 10:30 น.</p>
-              <p>🫧 ล้างสี - ดูดฝุ่น</p>
-            </div>
-            <div class="btn-row">
-              <button class="btn btn-outline-gray">❌ [ ปฏิเสธ ]</button>
-              <button class="btn btn-green">✅ [ ยืนยันรับคิว ]</button>
-            </div>
-          </div>
-        </div>
+        <div class="col-header header-gray"><span>⏳</span> รอยืนยัน</div>
+        <div class="col-body" id="col-pending"></div>
       </div>
 
       <div class="kanban-col">
-        <div class="col-header header-yellow">
-          <span>🕒</span> รอรับรถ (2 คิว)
-        </div>
-        <div class="col-body">
-          <div class="job-card">
-            <div class="card-top">
-              <span class="job-id">JOB CARD #4010</span>
-              <span class="status-text text-yellow">รอรับรถ</span>
-            </div>
-            <h3 class="car-title">HONDA CIVIC</h3>
-            <p class="car-plate">กข 1234 กทม.</p>
-            <div class="card-detail">
-              <p>🕒 เวลาเข้า: 13:30 น.</p>
-              <p>🫧 ล้างสี - ดูดฝุ่น + เคลือบแว็กซ์</p>
-            </div>
-            <button class="btn btn-gray" style="margin-top: 10px">
-              📸 [ รับรถและบันทึกสภาพ ]
-            </button>
-          </div>
-
-          <div class="job-card-ghost">คิวถัดไป #4011</div>
-        </div>
+        <div class="col-header header-yellow"><span>🕒</span> รอรับรถ</div>
+        <div class="col-body" id="col-confirmed"></div>
       </div>
 
       <div class="kanban-col">
-        <div class="col-header header-blue">
-          <span>🌊</span> กำลังล้าง (1 คิว)
-        </div>
-        <div class="col-body">
-          <div class="job-card">
-            <div class="card-top">
-              <span class="job-id">JOB CARD #3998</span>
-              <span class="status-text text-blue">● IN PROGRESS</span>
-            </div>
-            <h3 class="car-title">TOYOTA CAMRY</h3>
-            <p class="car-plate">วพ 5678 กทม.</p>
-            <div class="card-detail">
-              <p>⏱️ เริ่มล้างเวลา: 13:35 น.</p>
-              <p>💧 ล้างสี - ดูดฝุ่น</p>
-            </div>
-
-            <div class="progress-container">
-              <div class="progress-bar">
-                <div class="progress-fill" style="width: 65%"></div>
-              </div>
-              <p class="progress-text">กำลังดำเนินการ 65%</p>
-            </div>
-
-            <button class="btn btn-blue">💦 [ ล้างเสร็จสิ้น ]</button>
-          </div>
-        </div>
+        <div class="col-header header-blue"><span>🌊</span> กำลังล้าง</div>
+        <div class="col-body" id="col-inprogress"></div>
       </div>
 
       <div class="kanban-col">
         <div class="col-header header-green">
-          <span>💵</span> รอชำระเงิน และ ส่งมอบ (1 คิว)
+          <span>💵</span> รอชำระเงิน และ ส่งมอบ
         </div>
-        <div class="col-body">
-          <div class="job-card">
-            <div class="card-top">
-              <span class="job-id">JOB CARD #3990</span>
-              <span class="status-text text-green">พร้อมส่งมอบ</span>
-            </div>
-            <h3 class="car-title">MAZDA 2</h3>
-            <p class="car-plate">พษ 9999 กทม.</p>
+        <div class="col-body" id="col-ready"></div>
+      </div>
+    </div>
+    <!-- popup step 1 : Pending -->
+    <div id="modal-confirm" class="modal-overlay">
+      <div class="modal-box">
+        <div class="modal-header">
+          <h3>รายละเอียดการจอง</h3>
+          <button class="btn-close" onclick="closePopup('modal-confirm')">
+            ✖
+          </button>
+        </div>
 
-            <div class="payment-box">
-              <span>ยอดชำระ:</span>
-              <span class="payment-amount">300 THB</span>
-            </div>
+        <div class="modal-body">
+          <div class="card-top">
+            <span class="job-id" id="popup-job-id">JOB CARD #4010</span>
+            <span class="status-text text-yellow">รอยืนยัน</span>
+          </div>
+          <h2 class="car-title" id="popup-car-title">HONDA CIVIC</h2>
+          <p class="car-plate" id="popup-car-plate">กข 1234 กทม.</p>
 
-            <div class="btn-group">
-              <button class="btn btn-gray">🧾 [ พิมพ์ใบเสร็จ ]</button>
-              <button class="btn btn-red">💰 [ ชำระเงินและจบงาน ]</button>
+          <hr class="divider" />
+
+          <div class="detail-list">
+            <div class="detail-item">
+              <span class="detail-label">ชื่อลูกค้า:</span>
+              <span class="detail-value" id="popup-customer"
+                >คุณสมชาย ใจดี</span
+              >
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">เบอร์โทร:</span>
+              <span class="detail-value" id="popup-phone">081-234-5678</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">วันที่ต้องการคิว:</span>
+              <span class="detail-value" id="popup-date">21 มี.ค. 2024</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">เวลา:</span>
+              <span class="detail-value" id="popup-time">10:30 น.</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">แพ็กเกจ:</span>
+              <span class="detail-value" id="popup-package"
+                >ล้างสี - ดูดฝุ่น</span
+              >
+            </div>
+            <div class="detail-item highlight-price">
+              <span class="detail-label">ยอดชำระโดยประมาณ:</span>
+              <span class="detail-value price-text" id="popup-price"
+                >150 THB</span
+              >
             </div>
           </div>
         </div>
+
+        <div class="modal-footer">
+          <button
+            class="btn btn-outline-gray"
+            onclick="closePopup('modal-confirm')"
+          >
+            ยกเลิก
+          </button>
+          <button class="btn btn-red" onclick="confirmBookingFromPopup()">
+            ยืนยันรับคิว
+          </button>
+        </div>
       </div>
     </div>
+
+    <!-- popup step 2 : Checkin -->
+    <div id="modal-checkin" class="modal-overlay">
+      <div class="modal-box">
+        <div class="modal-header">
+          <h3>บันทึกสภาพรถก่อนเข้ารับบริการ</h3>
+          <button class="btn-close" onclick="closePopup('modal-checkin')">
+            ✖
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div class="card-top">
+            <span class="job-id" id="checkin-job-id">JOB CARD #4010</span>
+            <span class="status-text text-yellow">รอรับรถ</span>
+          </div>
+          <h2 class="car-title" id="checkin-car-title">HONDA CIVIC</h2>
+          <p class="car-plate" id="checkin-car-plate">กข 1234 กทม.</p>
+
+          <hr class="divider" />
+
+          <div class="checkin-form">
+            <label class="radio-label">
+              <input type="radio" name="car_condition" value="normal" checked />
+              <span class="radio-text">ปกติ ไม่มีรอยขีดข่วน</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="car_condition" value="damaged" />
+              <span class="radio-text">พบรอยขีดข่วน / ความเสียหาย</span>
+            </label>
+
+            <textarea
+              class="form-textarea"
+              placeholder="ระบุตำแหน่งและลักษณะความเสียหาย..."
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button
+            class="btn btn-outline-gray"
+            onclick="closePopup('modal-checkin')"
+          >
+            ยกเลิก
+          </button>
+          <button class="btn btn-blue" onclick="confirmCheckinFromPopup()">
+            บันทึกและเริ่มปฏิบัติงาน
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- popup step 3 : Finish Wash -->
+    <div id="modal-finish-wash" class="modal-overlay">
+      <div class="modal-box">
+        <div class="modal-header">
+          <h3>ยืนยันการล้างเสร็จสิ้น</h3>
+          <button class="btn-close" onclick="closePopup('modal-finish-wash')">
+            ✖
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div class="card-top">
+            <span class="job-id" id="finish-job-id">JOB CARD #3998</span>
+            <span class="status-text text-blue">● IN PROGRESS</span>
+          </div>
+          <h2 class="car-title" id="finish-car-title">TOYOTA CAMRY</h2>
+          <p class="car-plate" id="finish-car-plate">วพ 5678 กทม.</p>
+
+          <hr class="divider" />
+
+          <div class="warning-box">
+            <span>⚠️</span>
+            <p>กรุณาตรวจสอบความสะอาดและเก็บอุปกรณ์ให้เรียบร้อยก่อนกดยืนยัน</p>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button
+            class="btn btn-outline-gray"
+            onclick="closePopup('modal-finish-wash')"
+          >
+            ยกเลิก
+          </button>
+          <button class="btn btn-blue" onclick="confirmFinishWashFromPopup()">
+            ล้างเสร็จสิ้น
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="modal-payment" class="modal-overlay">
+      <div class="modal-box" style="max-width: 400px">
+        <div class="modal-body" style="padding-top: 30px">
+          <div
+            style="
+              border: 2px solid #4285f4;
+              border-radius: 12px;
+              padding: 16px;
+              margin-bottom: 20px;
+            "
+          >
+            <div class="card-top">
+              <span
+                style="
+                  background: #d71920;
+                  color: white;
+                  padding: 4px 8px;
+                  border-radius: 4px;
+                  font-weight: bold;
+                  font-size: 12px;
+                "
+                >USERNAME</span
+              >
+              <span style="color: #dc3545; font-size: 12px; font-weight: bold"
+                >JOB ID : 3990</span
+              >
+            </div>
+            <h2 class="car-title" style="margin-top: 10px">MAZDA 2</h2>
+            <p class="car-plate">พษ 9999</p>
+            <div
+              class="card-detail"
+              style="background: #e9ecef; padding: 10px; border-radius: 8px"
+            >
+              <p>🕒 ลูกค้าเข้า : 14:00 น.</p>
+              <p>🫧 ล้างสี - ดูดฝุ่น</p>
+            </div>
+          </div>
+
+          <div style="text-align: center; margin-bottom: 20px">
+            <p style="margin: 0; color: #6c757d; font-weight: 600">
+              ยอดชำระทั้งหมด
+            </p>
+            <h1
+              style="
+                margin: 0;
+                color: #28a745;
+                font-size: 40px;
+                font-weight: bold;
+              "
+            >
+              300 THB
+            </h1>
+          </div>
+
+          <p
+            style="
+              margin: 0 0 10px 0;
+              font-size: 14px;
+              font-weight: 600;
+              color: #212529;
+            "
+          >
+            ช่องทางชำระเงิน
+          </p>
+          <div class="payment-methods">
+            <div class="method-box active" onclick="selectPaymentMethod(this)">
+              <span style="font-size: 28px; color: #d71920">💵</span>
+              <span>เงินสด</span>
+            </div>
+            <div class="method-box" onclick="selectPaymentMethod(this)">
+              <span style="font-size: 28px; color: #adb5bd">🏦</span>
+              <span>โอนเงิน</span>
+            </div>
+            <div class="method-box" onclick="selectPaymentMethod(this)">
+              <span style="font-size: 28px; color: #adb5bd">💳</span>
+              <span>บัตรเครดิต</span>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="modal-footer"
+          style="background: white; border-top: none; padding-top: 0"
+        >
+          <button
+            class="btn btn-outline-gray"
+            onclick="closePopup('modal-payment')"
+          >
+            ยกเลิก
+          </button>
+          <button
+            class="btn btn-green"
+            style="background-color: #a3efc4; color: #1e7e34"
+            onclick="confirmPaymentFromPopup()"
+          >
+            ยืนยันชำระเงิน
+          </button>
+        </div>
+      </div>
+    </div>
+
     <script src="js/script.js"></script>
   </body>
 </html>

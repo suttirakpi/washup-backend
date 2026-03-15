@@ -8,17 +8,20 @@ body {
 /* --- Layout กระดาน --- */
 .kanban-board {
   display: flex;
+  flex-wrap: nowrap; /* 👈 พระเอกของเรา! สั่งห้ามตกบรรทัดเด็ดขาด */
   gap: 24px;
   padding: 20px;
   align-items: flex-start;
-  overflow-x: auto;
+  overflow-x: auto; /* 👈 ถ้าจอเล็ก ให้เกิดแถบเลื่อน (Scroll) ซ้าย-ขวา */
+  height: 100%; /* ให้กระดานสูงเต็มพื้นที่ */
+  padding-bottom: 20px; /* เผื่อที่ให้แถบเลื่อนนิดนึง */
 }
+
 .kanban-col {
-  flex: 1;
-  min-width: 320px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  min-width: 320px !important; /* บังคับความกว้าง */
+  flex-shrink: 0 !important; /* ห้ามโดนเบราว์เซอร์บีบจนแบน */
+  display: flex !important;
+  flex-direction: column !important;
 }
 
 /* --- หัวคอลัมน์ (Pill Header) --- */
@@ -44,16 +47,17 @@ body {
   color: #fff;
 }
 
-/* --- พื้นที่ใส่การ์ด (เส้นประ) --- */
+/* --- พื้นที่ใส่การ์ด (บังคับให้โชว์ตลอดแม้จะว่างเปล่า) --- */
 .col-body {
   background-color: #fcfcfd;
-  border: 2px dashed #ced4da; /* เส้นประแบบในรูป */
+  border: 2px dashed #ced4da; /* ขอบเส้นประ ให้รู้ว่านี่คือพื้นที่วางการ์ด */
   border-radius: 16px;
   padding: 16px;
-  min-height: 65vh;
+  min-height: 60vh; /* 👈 พระเอกอยู่ตรงนี้! บังคับให้สูงอย่างน้อย 60% ของจอ ห้ามหด! */
   display: flex;
   flex-direction: column;
   gap: 16px;
+  margin-top: 15px;
 }
 
 /* --- สไตล์ของการ์ด (Job Card) --- */
@@ -225,4 +229,212 @@ body {
 .btn-green {
   background-color: #28a745;
   color: #ffffff;
+}
+
+/* ================= สไตล์สำหรับ POPUP (Modal) ================= */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* พื้นหลังดำจางๆ */
+  display: none; /* ซ่อนไว้ก่อน */
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+/* โชว์ Popup เมื่อใส่คลาส active */
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal-box {
+  background-color: #fff;
+  width: 100%;
+  max-width: 450px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  animation: slideUp 0.3s ease-out; /* ลูกเล่นเด้งขึ้นเบาๆ */
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #f1f3f5;
+}
+.modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #212529;
+}
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #adb5bd;
+}
+
+.modal-body {
+  padding: 24px;
+}
+.divider {
+  border: 0;
+  border-top: 1px dashed #dee2e6;
+  margin: 16px 0;
+}
+
+.detail-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+.detail-label {
+  color: #6c757d;
+}
+.detail-value {
+  font-weight: 600;
+  color: #212529;
+  text-align: right;
+}
+.highlight-price {
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px solid #f1f3f5;
+}
+.price-text {
+  font-size: 18px;
+  color: #d71920;
+}
+
+.modal-footer {
+  display: flex;
+  gap: 12px;
+  padding: 20px 24px;
+  background-color: #f8f9fa;
+  border-top: 1px solid #f1f3f5;
+}
+.modal-footer .btn {
+  flex: 1;
+  padding: 12px;
+  font-size: 16px;
+}
+
+/* --- สไตล์ฟอร์มบันทึกสภาพรถ (Popup รับรถ) --- */
+.checkin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  color: #212529;
+  cursor: pointer;
+}
+
+/* ปรับสีจุด Radio Button ให้เป็นสีฟ้าเวลาถูกเลือก */
+.radio-label input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #4285f4;
+  cursor: pointer;
+}
+
+.form-textarea {
+  width: 100%;
+  height: 100px;
+  padding: 12px;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  font-family: "Kanit", sans-serif;
+  font-size: 14px;
+  resize: none; /* ห้าม User ดึงกล่องให้ยืด */
+  box-sizing: border-box; /* สำคัญมาก ป้องกันกล่องทะลุขอบ */
+  margin-top: 8px;
+  color: #495057;
+}
+
+.form-textarea:focus {
+  outline: none;
+  border-color: #4285f4; /* กรอบสีฟ้าเวลาคลิกพิมพ์ */
+  box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.1);
+}
+
+/* --- สไตล์กล่องแจ้งเตือน (Warning Box) --- */
+.warning-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background-color: #fff3cd; /* พื้นหลังสีเหลืองอ่อน */
+  color: #856404; /* ตัวหนังสือสีน้ำตาลเข้ม */
+  padding: 16px;
+  border-radius: 8px;
+  margin-top: 16px;
+  font-size: 14px;
+  line-height: 1.5;
+  border: 1px solid #ffeeba;
+}
+.warning-box span {
+  font-size: 20px;
+}
+.warning-box p {
+  margin: 0;
+}
+
+/* --- สไตล์ช่องทางชำระเงิน (Popup จ่ายเงิน) --- */
+.payment-methods {
+  display: flex;
+  gap: 10px;
+}
+.method-box {
+  flex: 1;
+  border: 2px dashed #ced4da;
+  border-radius: 8px;
+  padding: 12px 10px;
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  color: #6c757d;
+  font-size: 14px;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+/* เวลากล่องถูกเลือก ให้กลายเป็นสีแดงเส้นทึบ */
+.method-box.active {
+  border: 2px solid #d71920;
+  color: #d71920;
+}
+
+.method-box.active span:first-child {
+  color: #d71920 !important; /* เปลี่ยนสีไอคอนเป็นสีแดง */
 }
