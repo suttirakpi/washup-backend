@@ -1,0 +1,228 @@
+@import url("https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap");
+
+body {
+  font-family: "Kanit", sans-serif;
+  background-color: #f4f5f9;
+}
+
+/* --- Layout กระดาน --- */
+.kanban-board {
+  display: flex;
+  gap: 24px;
+  padding: 20px;
+  align-items: flex-start;
+  overflow-x: auto;
+}
+.kanban-col {
+  flex: 1;
+  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* --- หัวคอลัมน์ (Pill Header) --- */
+.col-header {
+  padding: 14px 24px;
+  border-radius: 50px; /* ขอบมนแบบแคปซูล */
+  font-weight: 600;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.header-yellow {
+  background-color: #ffca28;
+  color: #222;
+}
+.header-blue {
+  background-color: #4285f4;
+  color: #fff;
+}
+.header-green {
+  background-color: #28a745;
+  color: #fff;
+}
+
+/* --- พื้นที่ใส่การ์ด (เส้นประ) --- */
+.col-body {
+  background-color: #fcfcfd;
+  border: 2px dashed #ced4da; /* เส้นประแบบในรูป */
+  border-radius: 16px;
+  padding: 16px;
+  min-height: 65vh;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* --- สไตล์ของการ์ด (Job Card) --- */
+.job-card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e9ecef;
+}
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.job-id {
+  color: #adb5bd;
+  background-color: #f8f9fa;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+.text-yellow {
+  color: #ffca28;
+}
+.text-blue {
+  color: #4285f4;
+}
+.text-green {
+  color: #28a745;
+}
+
+.car-title {
+  margin: 0 0 4px 0;
+  font-size: 18px;
+  color: #212529;
+}
+.car-plate {
+  margin: 0 0 16px 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #dc3545; /* สีแดง */
+}
+.card-detail p {
+  margin: 4px 0;
+  font-size: 13px;
+  color: #6c757d;
+}
+
+/* --- Progress Bar --- */
+.progress-container {
+  margin: 16px 0;
+}
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background-color: #e9ecef;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background-color: #4285f4;
+  border-radius: 10px;
+}
+.progress-text {
+  font-size: 11px;
+  color: #adb5bd;
+  text-align: right;
+  margin-top: 6px;
+}
+
+/* --- Payment Box --- */
+.payment-box {
+  background-color: #e6f4ea; /* พื้นหลังสีเขียวอ่อน */
+  padding: 12px 16px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 16px 0;
+}
+.payment-box span {
+  color: #1e7e34;
+  font-weight: 600;
+  font-size: 14px;
+}
+.payment-amount {
+  font-size: 18px !important;
+}
+
+/* --- ปุ่มกด --- */
+.btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: "Kanit", sans-serif;
+  transition: 0.2s;
+}
+.btn:hover {
+  opacity: 0.8;
+}
+.btn-gray {
+  background-color: #f1f3f5;
+  color: #495057;
+}
+.btn-blue {
+  background-color: #4285f4;
+  color: #fff;
+}
+.btn-red {
+  background-color: #d71920;
+  color: #fff;
+}
+.btn-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* การ์ดตัวอย่างแบบจางๆ */
+.job-card-ghost {
+  background-color: transparent;
+  border: 2px dashed #dee2e6;
+  border-radius: 50px;
+  padding: 12px;
+  text-align: center;
+  color: #adb5bd;
+  font-size: 14px;
+}
+
+/* --- สไตล์ที่เพิ่มใหม่สำหรับคอลัมน์ 1 (รอยืนยัน) --- */
+
+.header-gray {
+  background-color: #6c757d;
+  color: #ffffff;
+}
+.text-gray {
+  color: #6c757d;
+}
+
+/* ปุ่มแบบแบ่ง 2 ฝั่งซ้ายขวา */
+.btn-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+.btn-row .btn {
+  flex: 1; /* แบ่งความกว้างคนละครึ่ง */
+  padding: 10px 5px;
+  font-size: 13px;
+}
+
+/* สีปุ่มเฉพาะ */
+.btn-outline-gray {
+  background-color: transparent;
+  border: 2px solid #ced4da;
+  color: #495057;
+}
+.btn-outline-gray:hover {
+  background-color: #f8f9fa;
+}
+
+.btn-green {
+  background-color: #28a745;
+  color: #ffffff;
+}

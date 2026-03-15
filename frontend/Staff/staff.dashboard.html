@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WASH UP - Staff Dashboard</title>
+
+    <link rel="stylesheet" href="/frontend/Staff/css/staff-dashboard.css" />
+  </head>
+  <body>
+    <div class="kanban-board">
+      <div class="kanban-col">
+        <div class="col-header header-gray">
+          <span>⏳</span> รอยืนยัน (1 คิว)
+        </div>
+        <div class="col-body">
+          <div class="job-card">
+            <div class="card-top">
+              <span class="job-id">JOB CARD #4012</span>
+              <span class="status-text text-gray">รอยืนยัน</span>
+            </div>
+            <h3 class="car-title">NISSAN ALMERA</h3>
+            <p class="car-plate">ขค 1122 กทม.</p>
+            <div class="card-detail">
+              <p>📅 ต้องการคิว: 21 มี.ค. | 10:30 น.</p>
+              <p>🫧 ล้างสี - ดูดฝุ่น</p>
+            </div>
+            <div class="btn-row">
+              <button class="btn btn-outline-gray">❌ [ ปฏิเสธ ]</button>
+              <button class="btn btn-green">✅ [ ยืนยันรับคิว ]</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kanban-col">
+        <div class="col-header header-yellow">
+          <span>🕒</span> รอรับรถ (2 คิว)
+        </div>
+        <div class="col-body">
+          <div class="job-card">
+            <div class="card-top">
+              <span class="job-id">JOB CARD #4010</span>
+              <span class="status-text text-yellow">รอรับรถ</span>
+            </div>
+            <h3 class="car-title">HONDA CIVIC</h3>
+            <p class="car-plate">กข 1234 กทม.</p>
+            <div class="card-detail">
+              <p>🕒 เวลาเข้า: 13:30 น.</p>
+              <p>🫧 ล้างสี - ดูดฝุ่น + เคลือบแว็กซ์</p>
+            </div>
+            <button class="btn btn-gray" style="margin-top: 10px">
+              📸 [ รับรถและบันทึกสภาพ ]
+            </button>
+          </div>
+
+          <div class="job-card-ghost">คิวถัดไป #4011</div>
+        </div>
+      </div>
+
+      <div class="kanban-col">
+        <div class="col-header header-blue">
+          <span>🌊</span> กำลังล้าง (1 คิว)
+        </div>
+        <div class="col-body">
+          <div class="job-card">
+            <div class="card-top">
+              <span class="job-id">JOB CARD #3998</span>
+              <span class="status-text text-blue">● IN PROGRESS</span>
+            </div>
+            <h3 class="car-title">TOYOTA CAMRY</h3>
+            <p class="car-plate">วพ 5678 กทม.</p>
+            <div class="card-detail">
+              <p>⏱️ เริ่มล้างเวลา: 13:35 น.</p>
+              <p>💧 ล้างสี - ดูดฝุ่น</p>
+            </div>
+
+            <div class="progress-container">
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 65%"></div>
+              </div>
+              <p class="progress-text">กำลังดำเนินการ 65%</p>
+            </div>
+
+            <button class="btn btn-blue">💦 [ ล้างเสร็จสิ้น ]</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="kanban-col">
+        <div class="col-header header-green">
+          <span>💵</span> รอชำระเงิน และ ส่งมอบ (1 คิว)
+        </div>
+        <div class="col-body">
+          <div class="job-card">
+            <div class="card-top">
+              <span class="job-id">JOB CARD #3990</span>
+              <span class="status-text text-green">พร้อมส่งมอบ</span>
+            </div>
+            <h3 class="car-title">MAZDA 2</h3>
+            <p class="car-plate">พษ 9999 กทม.</p>
+
+            <div class="payment-box">
+              <span>ยอดชำระ:</span>
+              <span class="payment-amount">300 THB</span>
+            </div>
+
+            <div class="btn-group">
+              <button class="btn btn-gray">🧾 [ พิมพ์ใบเสร็จ ]</button>
+              <button class="btn btn-red">💰 [ ชำระเงินและจบงาน ]</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="js/script.js"></script>
+  </body>
+</html>
