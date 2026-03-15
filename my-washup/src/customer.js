@@ -51,13 +51,19 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-// --- ฟังก์ชันต่างๆ ---
-
 function checkLoginStatus() {
-  const user = JSON.parse(localStorage.getItem("user")); // ดึงข้อมูล User มาเช็ค
+  const userStr = localStorage.getItem("user");
 
-  if (user) {
-    // เช็คว่ามีกล่อง Auth ของฝั่งลูกค้าไหม (nav-auth-section)
+  // 1. ถ้าไม่มีข้อมูล หรือเจอขยะคำว่า undefined ให้ข้ามไปเลย (โชว์ปุ่ม LOGIN/REGISTER ปกติ)
+  if (!userStr || userStr === "undefined" || userStr === "null") return;
+
+  try {
+    const user = JSON.parse(userStr);
+
+    // 2. เช็คให้ชัวร์ว่ามีข้อมูล user และมีชื่อ(login_name) จริงๆ เท่านั้น
+    if (!user || !user.login_name) return;
+
+    // 3. ถ้าของจริง ค่อยเปลี่ยนปุ่มเป็นสีแดง
     const authSectionCustomer = document.getElementById("nav-auth-section");
     if (authSectionCustomer) {
       authSectionCustomer.innerHTML = `
@@ -66,7 +72,6 @@ function checkLoginStatus() {
       `;
     }
 
-    // เช็คว่ามีกล่อง Auth ของฝั่งพนักงานไหม (nav-auth-section-staff)
     const authSectionStaff = document.getElementById("nav-auth-section-staff");
     if (authSectionStaff) {
       authSectionStaff.innerHTML = `
@@ -74,6 +79,10 @@ function checkLoginStatus() {
         <button onclick="logoutUser()" class="btn-logout">LOGOUT</button>
       `;
     }
+  } catch (error) {
+    // ถ้าไฟล์ JSON พัง ให้ล้างขยะทิ้งไปเลย
+    console.error("ข้อมูล User พัง, ล้างค่าใหม่");
+    localStorage.removeItem("user");
   }
 }
 

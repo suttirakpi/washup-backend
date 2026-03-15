@@ -2,13 +2,15 @@
 .navbar-container {
   display: flex;
   align-items: center;
-  padding: 15px 10%; /* ปรับให้ขอบซ้ายขวากว้างขึ้นตรงตาม Design */
+  justify-content: space-between; /* 🎯 เติมบรรทัดนี้: กระจาย ซ้าย-กลาง-ขวา */
+  padding: 15px 10%;
   background-color: #ffffff;
   border-bottom: 2px solid #f0f0f0;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   position: sticky;
   top: 0;
   z-index: 1000;
+  width: 100%; /* 🎯 เติมบรรทัดนี้: บังคับกว้างเต็มจอ */
 }
 
 /* 🎯 จุดสำคัญ: ดันโลโก้ไปซ้ายสุด และผลักเมนูที่เหลือไปขวาสุด */
