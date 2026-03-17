@@ -403,30 +403,451 @@ app.delete("/api/vehicles/:id", authMiddleware, async (req, res) => {
   }
 });
 
-//role public
-//services // API สำหรับดึงข้อมูลประเภทบริการล้างรถทั้งหมด
-app.get("/api/service", async (req, res) => {
-  const db = mongoose.connection.collection("service");
+// role: admin
+// API สำหรับเพิ่มแพ็กเกจบริการใหม่ (ใช้ในหน้า owner จัดการแพ็กเกจ)
+
+// owner เพิ่ม service
+app.post("/api/service", authMiddleware, async (req, res) => {
+  const serviceDB = mongoose.connection.collection("service");
+  const priceDB = mongoose.connection.collection("service_prices");
+
   try {
-    const services = await db.find({ is_active: true }).toArray();
-    res.json(services);
+    if (req.user.user_role !== "admin") {
+      return res.status(403).json({ message: "access denied" });
+    }
+
+    const { service_name, description, vehicle_type_id, price } = req.body;
+
+    // หา service id ใหม่
+    const lastService = await serviceDB
+      .find({})
+      .sort({ service_id: -1 })
+      .limit(1)
+      .toArray();
+
+    const service_id =
+      lastService.length > 0 ? lastService[0].service_id + 1 : 3001;
+
+    await serviceDB.insertOne({
+      service_id,
+      service_name,
+      description,
+      is_active: true,
+    });
+
+    // หา price id ใหม่
+    const lastPrice = await priceDB
+      .find({})
+      .sort({ service_price_id: -1 })
+      .limit(1)
+      .toArray();
+
+    const service_price_id =
+      lastPrice.length > 0 ? lastPrice[0].service_price_id + 1 : 5001;
+
+    await priceDB.insertOne({
+      service_price_id,
+      service_id,
+      vehicle_type_id,
+      price,
+    });
+
+    res.json({
+      message: "service created",
+      service_id,
+    });
   } catch (error) {
     res.status(500).json({
-      message: "server error",
+      message: "error creating service",
     });
   }
 });
 
 //role public
-//service-prices // API สำหรับดึงข้อมูลราคาบริการล้างรถทั้งหมด
-app.get("/api/service-prices", async (req, res) => {
-  const db = mongoose.connection.collection("service_prices");
+//services // API สำหรับดึงข้อมูลประเภทบริการล้างรถทั้งหมด
+app.get("/api/services", async (req, res) => {
+  const serviceDB = mongoose.connection.collection("service");
+
   try {
-    const prices = await db.find({}).toArray();
-    res.json(prices);
+    const services = await serviceDB
+      .aggregate([
+        // เอาเฉพาะ service ที่เปิดใช้งาน
+        {
+          $match: { is_active: true },
+        },
+
+        // join ตาราง service_prices
+        {
+          $lookup: {
+            from: "service_prices",
+            localField: "service_id",
+            foreignField: "service_id",
+            as: "prices",
+          },
+        },
+
+        // join ตาราง vehicle_type
+        {
+          $lookup: {
+            from: "vehicle_type",
+            localField: "prices.vehicle_type_id",
+            foreignField: "vehicle_type_id",
+            as: "vehicle_types",
+          },
+        },
+      ])
+      .toArray();
+
+    res.json(services);
   } catch (error) {
     res.status(500).json({
-      message: "server error",
+      message: "error fetching services",
+    });
+  }
+});
+// owner ใช้จัดการ service
+app.get("/api/services/admin", authMiddleware, async (req, res) => {
+  const serviceDB = mongoose.connection.collection("service");
+
+  try {
+    if (req.user.user_role !== "admin") {
+      return res.status(403).json({ message: "access denied" });
+    }
+
+    const services = await serviceDB
+      .aggregate([
+        {
+          $lookup: {
+            from: "service_prices",
+            localField: "service_id",
+            foreignField: "service_id",
+            as: "prices",
+          },
+        },
+      ])
+      .toArray();
+
+    res.json(services);
+  } catch (error) {
+    res.status(500).json({
+      message: "error fetching services",
+    });
+  }
+});
+
+// owner แก้ service
+app.put("/api/service/:id", authMiddleware, async (req, res) => {
+  const serviceDB = mongoose.connection.collection("service");
+  const priceDB = mongoose.connection.collection("service_prices");
+
+  try {
+    if (req.user.user_role !== "admin") {
+      return res.status(403).json({ message: "access denied" });
+    }
+
+    const serviceId = parseInt(req.params.id);
+
+    const { service_name, description, price } = req.body;
+
+    await serviceDB.updateOne(
+      { service_id: serviceId },
+      {
+        $set: {
+          service_name,
+          description,
+        },
+      },
+    );
+
+    await priceDB.updateOne(
+      { service_id: serviceId },
+      {
+        $set: { price },
+      },
+    );
+
+    res.json({
+      message: "service updated",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "error updating service",
+    });
+  }
+});
+
+// owner ลบ service
+app.delete("/api/service/:id", authMiddleware, async (req, res) => {
+  const serviceDB = mongoose.connection.collection("service");
+  const priceDB = mongoose.connection.collection("service_prices");
+
+  try {
+    if (req.user.user_role !== "admin") {
+      return res.status(403).json({ message: "access denied" });
+    }
+
+    const serviceId = parseInt(req.params.id);
+
+    // ลบราคา
+    await priceDB.deleteMany({
+      service_id: serviceId,
+    });
+
+    // ลบบริการ
+    await serviceDB.deleteOne({
+      service_id: serviceId,
+    });
+
+    res.json({
+      message: "service deleted",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "error deleting service",
+    });
+  }
+});
+
+// role: admin
+// API สำหรับแก้ไขแพ็กเกจบริการ
+
+app.put("/api/service/:id", authMiddleware, async (req, res) => {
+  // เชื่อม collection service
+  const db = mongoose.connection.collection("service");
+
+  try {
+    //  ตรวจ role ต้องเป็น admin
+    if (req.user.user_role !== "admin") {
+      return res.status(403).json({
+        message: "access denied",
+      });
+    }
+
+    //  รับ service_id จาก URL
+    const serviceId = parseInt(req.params.id);
+
+    //  รับข้อมูลใหม่จาก frontend
+    const { service_name, description, is_active } = req.body;
+
+    //  update service ใน database
+    const result = await db.updateOne(
+      { service_id: serviceId }, // หา service ที่ต้องการแก้
+      {
+        $set: {
+          service_name: service_name,
+          description: description,
+          is_active: is_active,
+        },
+      },
+    );
+
+    //  ถ้าไม่พบ service
+    if (result.matchedCount === 0) {
+      return res.status(404).json({
+        message: "service not found",
+      });
+    }
+
+    //  ส่งผลลัพธ์กลับ
+    res.json({
+      message: "service updated",
+    });
+  } catch (error) {
+    //  error server
+    res.status(500).json({
+      message: "error updating service",
+    });
+  }
+});
+
+// role: admin
+// API สำหรับลบแพ็กเกจบริการ
+
+app.delete("/api/service/:id", authMiddleware, async (req, res) => {
+  // เชื่อม collection service
+  const db = mongoose.connection.collection("service");
+
+  try {
+    // 🔒 ตรวจ role ต้องเป็น admin
+    if (req.user.user_role !== "admin") {
+      return res.status(403).json({
+        message: "access denied",
+      });
+    }
+
+    // 📌 รับ service_id จาก URL
+    const serviceId = parseInt(req.params.id);
+
+    // 🗑 ลบ service
+    const result = await db.deleteOne({
+      service_id: serviceId,
+    });
+
+    // ❗ ถ้าไม่พบ service
+    if (result.deletedCount === 0) {
+      return res.status(404).json({
+        message: "service not found",
+      });
+    }
+
+    // 📤 ส่งผลลัพธ์กลับ
+    res.json({
+      message: "service deleted",
+    });
+  } catch (error) {
+    // ❌ error server
+    res.status(500).json({
+      message: "error deleting service",
+    });
+  }
+});
+
+// role: public
+// API ดึงรายการประเภทรถทั้งหมด
+
+app.get("/api/vehicle-types", async (req, res) => {
+  const db = mongoose.connection.collection("vehicle_type");
+
+  try {
+    // ดึงข้อมูลทั้งหมด
+    const vehicleTypes = await db.find({}).toArray();
+
+    res.json(vehicleTypes);
+  } catch (error) {
+    res.status(500).json({
+      message: "error fetching vehicle types",
+    });
+  }
+});
+
+// role: admin
+// API เพิ่มประเภทรถใหม่
+
+app.post("/api/vehicle-types", authMiddleware, async (req, res) => {
+  const db = mongoose.connection.collection("vehicle_type");
+
+  try {
+    // ตรวจ role ต้องเป็น admin
+    if (req.user.user_role !== "admin") {
+      return res.status(403).json({
+        message: "access denied",
+      });
+    }
+
+    const { vehicle_type_name } = req.body;
+
+    // ตรวจข้อมูล
+    if (!vehicle_type_name) {
+      return res.status(400).json({
+        message: "vehicle_type_name required",
+      });
+    }
+
+    // หา id ล่าสุด
+    const lastType = await db
+      .find({})
+      .sort({ vehicle_type_id: -1 })
+      .limit(1)
+      .toArray();
+
+    const vehicle_type_id =
+      lastType.length > 0 ? lastType[0].vehicle_type_id + 1 : 1;
+
+    // insert
+    await db.insertOne({
+      vehicle_type_id: vehicle_type_id,
+      vehicle_type_name: vehicle_type_name,
+    });
+
+    res.json({
+      message: "vehicle type created",
+      vehicle_type_id: vehicle_type_id,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "error creating vehicle type",
+    });
+  }
+});
+
+// role: admin
+// API แก้ไขประเภทรถ
+
+app.put("/api/vehicle-types/:id", authMiddleware, async (req, res) => {
+  const db = mongoose.connection.collection("vehicle_type");
+
+  try {
+    if (req.user.user_role !== "admin") {
+      return res.status(403).json({
+        message: "access denied",
+      });
+    }
+
+    const vehicleTypeId = parseInt(req.params.id);
+    const { vehicle_type_name } = req.body;
+
+    if (!vehicle_type_name) {
+      return res.status(400).json({
+        message: "vehicle_type_name required",
+      });
+    }
+
+    const result = await db.updateOne(
+      { vehicle_type_id: vehicleTypeId },
+      {
+        $set: {
+          vehicle_type_name: vehicle_type_name,
+        },
+      },
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({
+        message: "vehicle type not found",
+      });
+    }
+
+    res.json({
+      message: "vehicle type updated",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "error updating vehicle type",
+    });
+  }
+});
+
+// role: admin
+// API ลบประเภทรถ
+
+app.delete("/api/vehicle-types/:id", authMiddleware, async (req, res) => {
+  const db = mongoose.connection.collection("vehicle_type");
+
+  try {
+    if (req.user.user_role !== "admin") {
+      return res.status(403).json({
+        message: "access denied",
+      });
+    }
+
+    const vehicleTypeId = parseInt(req.params.id);
+
+    const result = await db.deleteOne({
+      vehicle_type_id: vehicleTypeId,
+    });
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({
+        message: "vehicle type not found",
+      });
+    }
+
+    res.json({
+      message: "vehicle type deleted",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "error deleting vehicle type",
     });
   }
 });
@@ -434,7 +855,6 @@ app.get("/api/service-prices", async (req, res) => {
 //role customer
 // POST /bookings
 // สร้าง booking และ booking_services โดยให้ id เพิ่มเอง
-
 app.post("/api/bookings", authMiddleware, async (req, res) => {
   const bookings = mongoose.connection.collection("bookings");
   const booking_services = mongoose.connection.collection("booking_services");
@@ -1206,13 +1626,85 @@ app.get("/api/payments", authMiddleware, async (req, res) => {
   }
 });
 
+// role: admin
+// API สำหรับหน้า Owner Dashboard
+// ใช้แสดงรายได้รวม จำนวนรถที่ล้างเสร็จ การยกเลิก และรายการล่าสุด
+
+app.get("/api/dashboard/revenue", authMiddleware, async (req, res) => {
+  const payments = mongoose.connection.collection("payments");
+  const bookings = mongoose.connection.collection("bookings");
+
+  try {
+    // ตรวจ role ต้องเป็น admin
+    if (req.user.user_role !== "admin") {
+      return res.status(403).json({
+        message: "access denied",
+      });
+    }
+
+    // ---------------------------
+    // 1️⃣ คำนวณรายได้รวม
+    // ---------------------------
+    const revenueResult = await payments
+      .aggregate([
+        {
+          $group: {
+            _id: null,
+            total_revenue: { $sum: "$total_amount" },
+          },
+        },
+      ])
+      .toArray();
+
+    const totalRevenue =
+      revenueResult.length > 0 ? revenueResult[0].total_revenue : 0;
+
+    // ---------------------------
+    // 2️⃣ จำนวนรถที่ล้างเสร็จ
+    // ---------------------------
+    const completedCars = await bookings.countDocuments({
+      status: "completed",
+    });
+
+    // ---------------------------
+    // 3️⃣ จำนวนการยกเลิก
+    // ---------------------------
+    const cancelledBookings = await bookings.countDocuments({
+      status: "cancelled",
+    });
+
+    // ---------------------------
+    // 4️⃣ รายการธุรกรรมล่าสุด
+    // ---------------------------
+    const recentTransactions = await payments
+      .find({})
+      .sort({ paid_at: -1 })
+      .limit(5)
+      .toArray();
+
+    // ---------------------------
+    // ส่งข้อมูลกลับ
+    // ---------------------------
+    res.json({
+      total_revenue: totalRevenue,
+      completed_cars: completedCars,
+      cancelled_bookings: cancelledBookings,
+      recent_transactions: recentTransactions,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "error fetching dashboard data",
+    });
+  }
+});
+
 // หน้า staff
 app.get("/staff", (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "staff", "index.html"));
 });
 
 // React router fallback
-app.get("*", (req, res) => {
+app.use((req, res) => {
   res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 
