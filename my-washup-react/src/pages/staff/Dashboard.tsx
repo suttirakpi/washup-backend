@@ -44,25 +44,33 @@ export default function StaffDashboard() {
   }, []);
 
   // 2️⃣ ฟังก์ชันอัปเดตสถานะรถ (PUT)
-  const updateStatus = (bookingId: number, newStatus: string) => {
+  const updateStatus = async (bookingId: number, newStatus: string) => {
     const token = localStorage.getItem("token");
 
-    fetch(`http://localhost:3000/api/bookings/${bookingId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ status: newStatus }), // ส่งสถานะใหม่ไปให้ Backend
-    })
-      .then((res) => res.json())
-      .then(() => {
-        // พออัปเดตสำเร็จ ให้โหลดข้อมูลใหม่เพื่อรีเฟรชหน้าจอ
-        fetchBookings();
-      })
-      .catch((err) => console.error("อัปเดตสถานะพัง:", err));
-  };
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/bookings/${bookingId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // ยื่นบัตรผ่าน
+          },
+          body: JSON.stringify({ status: newStatus }),
+        },
+      );
 
+      if (response.ok) {
+        // ✅ สั่งโหลดข้อมูลใหม่จาก Server ทันทีที่อัปเดตสำเร็จ
+        fetchBookings();
+      } else {
+        const data = await response.json();
+        alert("Error: " + data.message); // จะได้รู้ว่าทำไม Server ถึงไม่ยอมให้ผ่าน
+      }
+    } catch (err) {
+      console.error("เชื่อมต่อพัง:", err);
+    }
+  };
   // ฟังก์ชันตัวช่วยดึงข้อมูลตาม Status ของ Backend
   const getJobs = (status: string) => jobs.filter((j) => j.status === status);
 
@@ -145,6 +153,7 @@ export default function StaffDashboard() {
                   <div className="card-actions">
                     <button className="btn-sm btn-red">ปฏิเสธ</button>
                     {/* 🚀 กดแล้วส่งสถานะ 'confirmed' ไปให้ Backend */}
+                    {/* 🚀 ปุ่มยืนยันคิว ต้องส่ง "confirmed" ตัวพิมพ์เล็กทั้งหมดตาม Backend */}
                     <button
                       className="btn-sm btn-darknavy"
                       onClick={() => updateStatus(job.booking_id, "confirmed")}
