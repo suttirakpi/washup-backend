@@ -1,0 +1,370 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Kanit", sans-serif;
+}
+body {
+  background-color: #fff;
+  overflow-x: hidden;
+}
+
+/* Hero Section */
+.hero {
+  display: flex;
+  height: 500px;
+  width: 100%;
+}
+.hero-left {
+  flex: 1;
+  background-color: #d71920;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 5% 0 10%;
+}
+.hero-right {
+  flex: 1;
+  background: url("/image/washhome.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.hero-left h1 {
+  font-size: 42px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 20px;
+}
+.hero-left p {
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1.6;
+  margin-bottom: 30px;
+  opacity: 0.9;
+}
+.btn-booking-hero {
+  background: white;
+  color: #d71920;
+  padding: 12px 30px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  width: fit-content;
+  transition: 0.3s;
+  cursor: pointer;
+  border: none;
+}
+.btn-booking-hero:hover {
+  transform: scale(1.05);
+}
+
+/* Why WASH-UP */
+.why-section {
+  padding: 80px 10%;
+  text-align: center;
+}
+.section-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 50px;
+  position: relative;
+  display: inline-block;
+}
+.section-title::after {
+  content: "";
+  display: block;
+  width: 80%;
+  height: 3px;
+  background: #d71920;
+  margin: 10px auto 0;
+}
+.why-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+.why-card {
+  background: #fdfdfd;
+  padding: 40px 25px;
+  border-radius: 20px;
+  border: 1px solid #eee;
+  transition: 0.3s;
+}
+.why-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+.icon-circle {
+  width: 70px;
+  height: 70px;
+  background: #d71920;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 30px;
+  margin: 0 auto 20px;
+}
+.why-card h3 {
+  font-size: 20px;
+  margin-bottom: 15px;
+}
+.why-card p {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.6;
+}
+
+/* About & Highlight */
+.about-red {
+  background: #d71920;
+  color: white;
+  padding: 60px 10%;
+  text-align: center;
+}
+.about-red h2 {
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+.about-red p {
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 1.8;
+  max-width: 850px;
+  margin: 0 auto;
+  opacity: 0.9;
+}
+
+.highlight-wrap {
+  display: flex;
+  padding: 80px 10%;
+  align-items: center;
+  gap: 50px;
+}
+.highlight-text {
+  flex: 1.2;
+}
+.highlight-text h2 {
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+.highlight-text p {
+  font-size: 15px;
+  color: #555;
+  line-height: 1.8;
+}
+.highlight-img {
+  flex: 1;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+.highlight-img img {
+  width: 100%;
+  display: block;
+}
+
+/* Steps Section */
+.steps-bg {
+  background-color: #fff1f1;
+  padding: 80px 10%;
+  text-align: center;
+}
+.steps-bg h2 {
+  font-size: 26px;
+  margin-bottom: 10px;
+}
+.steps-bg p.sub {
+  margin-bottom: 50px;
+  color: #666;
+}
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 40px;
+}
+.step-box {
+  background: white;
+  padding: 40px 15px;
+  border-radius: 15px;
+  position: relative;
+}
+.step-icon {
+  width: 80px;
+  height: 80px;
+  border: 2px solid #ffcfcf;
+  border-radius: 50%;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  color: #d71920;
+}
+.step-num {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: #d71920;
+  color: white;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn-main-booking {
+  background: #d71920;
+  color: white;
+  padding: 12px 50px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 18px;
+  display: inline-block;
+  transition: 0.3s;
+  cursor: pointer;
+  border: none;
+}
+
+/* Package Section */
+.package-section {
+  padding: 80px 10%;
+  text-align: center;
+}
+.package-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  align-items: flex-start;
+}
+.package-card {
+  background: white;
+  padding: 40px 30px;
+  border-radius: 20px;
+  border: 1px solid #eee;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.02);
+}
+.package-card.popular {
+  border: 2px solid #d71920;
+  transform: scale(1.05);
+}
+.popular-badge {
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #d71920;
+  color: white;
+  padding: 5px 25px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+}
+.package-card h3 {
+  font-size: 18px;
+  margin-bottom: 15px;
+  color: #333;
+}
+.package-card .price {
+  font-size: 42px;
+  font-weight: 700;
+  color: #d71920;
+  margin-bottom: 25px;
+}
+.package-card ul {
+  list-style: none;
+  text-align: left;
+  margin-bottom: 30px;
+}
+.package-card ul li {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+}
+.package-card ul li i {
+  color: #d71920;
+  margin-right: 10px;
+  font-size: 10px;
+}
+.btn-select {
+  background: #d71920;
+  color: white;
+  padding: 12px 0;
+  width: 100%;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+  display: inline-block;
+  cursor: pointer;
+  border: none;
+}
+
+/* Ready CTA (อิงจากภาพดีไซน์) */
+.ready-bg {
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+    url("https://images.unsplash.com/photo-1520340356584-f9917d1eea6f?q=80&w=1500&auto=format&fit=crop");
+  background-size: cover;
+  background-position: center;
+  padding: 80px 10%;
+  text-align: center;
+  color: white;
+}
+.ready-bg h2 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 30px;
+}
+.ready-btns {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+.btn-cta {
+  padding: 12px 40px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: 0.3s;
+  display: inline-block;
+}
+.btn-cta.reg {
+  background: #d71920;
+  color: white;
+}
+.btn-cta.log {
+  background: #d71920;
+  color: white;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .hero,
+  .highlight-wrap {
+    flex-direction: column;
+    height: auto;
+  }
+  .hero-left {
+    padding: 60px 10%;
+  }
+  .why-grid,
+  .steps-grid,
+  .package-grid {
+    grid-template-columns: 1fr;
+  }
+  .package-card.popular {
+    transform: scale(1);
+  }
+}
