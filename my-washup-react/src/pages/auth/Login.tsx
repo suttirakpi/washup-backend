@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
 export default function Login() {
@@ -6,12 +6,16 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
+  // 1️⃣ เติม React.FormEvent ตรงนี้ครับ TypeScript จะได้เลิกบ่น
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+
     try {
+      // 2️⃣ URL ยิงไปหา Backend ของเพื่อน
       const response = await fetch("http://localhost:3000/api/users/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        // 3️⃣ ส่งตัวแปรชื่อ login_name และ login_password ตามที่ Backend รอรับ
         body: JSON.stringify({
           login_name: username,
           login_password: password,
@@ -21,30 +25,29 @@ export default function Login() {
       const data = await response.json();
 
       if (response.ok) {
-        // ✅ เก็บ Token และข้อมูล User ลงในเครื่อง
+        // ล็อกอินสำเร็จ เก็บ Token ไว้ใช้งาน
         localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
 
-        // 🚀 เช็ค Role ถ้าเป็น staff/admin ให้ไปหน้า Dashboard
-        if (
-          data.user.user_role === "staff" ||
-          data.user.user_role === "admin"
-        ) {
-          navigate("/staff");
+        localStorage.setItem("userName", data.user.fullname);
+        // 4️⃣ เช็คสิทธิ์ด้วยคำว่า user_role
+        if (data.user.user_role === "admin") {
+          navigate("/admin"); // ถ้าเป็นเจ้าของ เด้งไปหน้ากราฟรายได้
+        } else if (data.user.user_role === "staff") {
+          navigate("/staff"); // ถ้าเป็นพนักงาน เด้งไปหน้าจดสภาพรถ
         } else {
-          navigate("/");
+          navigate("/"); // ถ้าเป็นลูกค้าทั่วไป เด้งไปหน้าแรก
         }
       } else {
-        alert(data.message);
+        alert("เข้าสู่ระบบไม่สำเร็จ: " + data.message);
       }
-    } catch (error) {
-      console.error("Login Error:", error);
+    } catch (err) {
+      console.error("Login Error:", err);
+      alert("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ ลองใหม่อีกครั้งครับ");
     }
   };
 
   return (
     <>
-      {/* 🎨 CSS Styles เป๊ะตามดีไซน์ */}
       <style>{`
         .login-page-bg {
           background-color: #f8f9fa;
@@ -78,7 +81,6 @@ export default function Login() {
           margin-bottom: 35px;
         }
 
-        /* ----- Input Field สไตล์คลีนๆ ----- */
         .input-group-clean {
           margin-bottom: 20px;
           text-align: left;
@@ -101,7 +103,7 @@ export default function Login() {
           color: #333;
           background-color: #fbfbfb;
           transition: border-color 0.2s, box-shadow 0.2s;
-          box-sizing: border-box; /* สำคัญเพื่อให้ padding ไม่ดันความกว้างออก */
+          box-sizing: border-box;
         }
 
         .input-clean:focus {
@@ -110,14 +112,13 @@ export default function Login() {
           outline: none;
         }
 
-        /* ----- ปุ่ม LOGIN สีแดงสะใจ ----- */
         .btn-login-red {
           width: 100%;
           padding: 14px;
           background-color: #e60000;
           color: white;
           border: none;
-          border-radius: 30px; /* ทรงมนสวยงาม */
+          border-radius: 30px;
           font-size: 16px;
           font-weight: 600;
           cursor: pointer;
@@ -131,7 +132,6 @@ export default function Login() {
           background-color: #cc0000;
         }
 
-        /* ----- ลิงก์สมัครสมาชิกด้านล่าง ----- */
         .register-text {
           font-size: 14px;
           color: #777;
@@ -149,10 +149,8 @@ export default function Login() {
         }
       `}</style>
 
-      {/* 🏗️ โครงสร้าง HTML เป๊ะตามดีไซน์ */}
       <div className="login-page-bg">
         <div className="login-card">
-          {/* โลโก้ WASH UP (เช็ค Path รูปให้ถูกนะครับ) */}
           <img
             src="/image/logowashup.png"
             alt="WASH UP Logo"
@@ -162,7 +160,6 @@ export default function Login() {
           <h2 className="login-title">เข้าสู่ระบบ WASH UP</h2>
 
           <form onSubmit={handleLogin}>
-            {/* Username Field */}
             <div className="input-group-clean">
               <label>ชื่อผู้ใช้งาน / Username</label>
               <input
@@ -175,7 +172,6 @@ export default function Login() {
               />
             </div>
 
-            {/* Password Field */}
             <div className="input-group-clean">
               <label>รหัสผ่าน / Password</label>
               <input
@@ -188,13 +184,11 @@ export default function Login() {
               />
             </div>
 
-            {/* ปุ่ม LOGIN ทรงมน สีแดง */}
             <button type="submit" className="btn-login-red">
               LOGIN
             </button>
           </form>
 
-          {/* ลิงก์สมัครสมาชิก */}
           <div className="register-text">
             หากยังไม่มีบัญชี?
             <Link to="/register" className="register-link">

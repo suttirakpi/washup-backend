@@ -1,6 +1,7 @@
 const express = require("express"); // ใช้สร้าง API Server
 const mongoose = require("mongoose"); // ใช้เชื่อมต่อ MongoDB
 const path = require("path");
+const fs = require("fs");
 
 const app = express(); // สร้างตัวแอป server
 app.use(express.json());
@@ -13,7 +14,21 @@ const jwt = require("jsonwebtoken"); // ใช้สร้าง token สำห
 const SECRET = "mysecretkey"; // key สำหรับเข้ารหัส token
 const cors = require("cors");
 app.use(cors()); // อนุญาต CORS
-app.use(express.static(path.join(__dirname, "dist"))); // อนุญาตให้ Frontend ยิง API เข้ามาได้
+
+const defaultDist = path.join(__dirname, "dist");
+const reactDist = path.join(__dirname, "my-washup-react", "dist");
+const staticDir = fs.existsSync(defaultDist) ? defaultDist : reactDist;
+
+app.use(express.static(staticDir)); // อนุญาตให้ Frontend ยิง API เข้ามาได้
+
+// Fallback สำหรับ SPA (ถ้าใช้ React Router)
+app.get("*", (req, res) => {
+  const indexHtml = path.join(staticDir, "index.html");
+  if (fs.existsSync(indexHtml)) {
+    return res.sendFile(indexHtml);
+  }
+  res.status(404).send("Not Found");
+});
 
 // API สำหรับ Users (ผู้ใช้)//
 //role public
