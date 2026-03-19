@@ -24,7 +24,7 @@ export default function App() {
         </Route>
 
         {/* 🔴 โซนเจ้าของ (Owner): เพิ่มตรงนี้ครับคุณตูน */}
-        <Route path="/owner" element={<OwnerDashboard />} />
+        <Route path="/admin" element={<OwnerDashboard />} />
 
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
