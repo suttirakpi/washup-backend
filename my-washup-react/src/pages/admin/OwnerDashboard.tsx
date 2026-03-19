@@ -54,23 +54,6 @@ export default function OwnerDashboard() {
 
   return (
     <div className="owner-bg">
-      {/* Navbar */}
-      <nav className="owner-navbar">
-        <div
-          style={{ fontSize: "24px", fontWeight: "900", fontStyle: "italic" }}
-        >
-          <span style={{ color: "#33b5e5" }}>WASH</span>{" "}
-          <span style={{ color: "#d71920" }}>UP</span>
-        </div>
-        <div className="nav-links">
-          <span>จัดการแพ็คเกจ</span>
-          <span>จัดการประเภทรอยยนต์</span>
-          <span className="active">ภาพรวมรายได้</span>
-          <span className="owner-badge">OWNER</span>
-          <span className="logout-btn">LOGOUT</span>
-        </div>
-      </nav>
-
       {/* Content */}
       <div className="owner-content">
         {/* 4 Cards ด้านบน (เปลี่ยนมาใช้ตัวแปรจาก Backend แล้ว) */}
@@ -83,7 +66,6 @@ export default function OwnerDashboard() {
                 THB
               </span>
             </div>
-            <div className="stat-sub text-green">↑ 12% from yesterday</div>
           </div>
           <div className="stat-card dark-border">
             <div className="stat-title">Completed Washes</div>
@@ -93,7 +75,6 @@ export default function OwnerDashboard() {
                 Cars
               </span>
             </div>
-            <div className="stat-sub">Target: 20 per day</div>
           </div>
           <div className="stat-card gray-border">
             <div className="stat-title">Cancelled</div>
@@ -103,7 +84,6 @@ export default function OwnerDashboard() {
                 Bookings
               </span>
             </div>
-            <div className="stat-sub text-red">Rate: 1.2%</div>
           </div>
           <div className="stat-card yellow-border">
             <div className="stat-title">Popular Package</div>
@@ -112,9 +92,6 @@ export default function OwnerDashboard() {
               style={{ fontSize: "18px", paddingTop: "5px" }}
             >
               {stats.popularPackage}
-            </div>
-            <div className="stat-sub text-yellow" style={{ marginTop: "5px" }}>
-              BEST SELLER THIS WEEK
             </div>
           </div>
         </div>

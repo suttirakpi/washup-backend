@@ -8,6 +8,7 @@ import OwnerDashboard from "./pages/admin/OwnerDashboard";
 // 1. นำเข้า StaffLayout ที่เพิ่งสร้าง
 import StaffLayout from "./layouts/StaffLayout";
 import StaffDashboard from "./pages/staff/Dashboard";
+import AdminLayout from "./layouts/AdminLayout";
 
 export default function App() {
   return (
@@ -23,8 +24,12 @@ export default function App() {
           <Route index element={<StaffDashboard />} />
         </Route>
 
-        {/* 🔴 โซนเจ้าของ (Owner): เพิ่มตรงนี้ครับคุณตูน */}
-        <Route path="/admin" element={<OwnerDashboard />} />
+        {/* 🔴 โซนเจ้าของ (Owner) */}
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<OwnerDashboard />} />
+          {/* อนาคตถ้าสร้างหน้าจัดการแพ็คเกจเสร็จ ก็เอามาเสียบต่อตรงนี้ได้เลย เช่น: */}
+          {/* <Route path="packages" element={<ManagePackages />} /> */}
+        </Route>
 
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
