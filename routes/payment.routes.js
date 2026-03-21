@@ -75,6 +75,7 @@ router.post("/", authMiddleware, async (req, res) => {
 router.get("/:booking_id", authMiddleware, async (req, res) => {
 
   const payments = mongoose.connection.collection("payments");
+  const bookings = mongoose.connection.collection("bookings");
 
   try {
     const booking_id = parseInt(req.params.booking_id);
@@ -83,6 +84,13 @@ router.get("/:booking_id", authMiddleware, async (req, res) => {
 
     if (!payment) {
       return res.status(404).json({ message: "ไม่พบ payment" });
+    }
+
+    // 🔥 เช็คเจ้าของ (ถูกที่แล้ว)
+    const booking = await bookings.findOne({ booking_id });
+
+    if (!booking || booking.user_id !== req.user.user_id) {
+      return res.status(403).json({ message: "forbidden" });
     }
 
     res.json(payment);

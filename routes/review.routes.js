@@ -29,8 +29,11 @@ router.post("/", authMiddleware, async (req, res) => {
       return res.status(404).json({ message: "ไม่พบ booking" });
     }
 
+    if (booking.status !== "completed") {
+    return res.status(400).json({ message: "ยังไม่เสร็จงาน" });
+    }
     if (booking.payment_status !== "paid") {
-      return res.status(400).json({ message: "ยังรีวิวไม่ได้" });
+    return res.status(400).json({ message: "ยังไม่ได้ชำระเงิน" });
     }
 
     const exists = await reviews.findOne({ booking_id });

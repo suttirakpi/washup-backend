@@ -72,11 +72,9 @@ router.get("/user", authMiddleware, async (req, res) => {
     const vehicles = await db.find({ user_id: userId }).toArray();
 
     // ถ้าไม่มีรถ
-    if (vehicles.length === 0) {
-      return res.json({
-        message: "no vehicles found",
-      });
-    }
+  if (vehicles.length === 0) {
+    return res.json([]); // 🔥 ส่ง array ว่างแทน
+  }
 
     // ส่งข้อมูลกลับไป
     res.json(vehicles);

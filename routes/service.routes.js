@@ -15,7 +15,7 @@ router.post("/", authMiddleware, async (req, res) => {
       return res.status(403).json({ message: "access denied" });
     }
 
-    const { service_name, description, price } = req.body;
+    const { service_name, description, price, type } = req.body;
 
     if (!service_name || !price) {
       return res.status(400).json({ message: "service_name and price required" });
@@ -35,6 +35,7 @@ router.post("/", authMiddleware, async (req, res) => {
       service_name,
       description,
       price,
+      type: type || "main",
       is_active: true
     });
 
@@ -57,10 +58,15 @@ router.get("/", async (req, res) => {
 
   try {
 
-    const services = await serviceDB.find({
-      is_active: true
-    }).toArray();
+    const { type } = req.query;
 
+    let filter = { is_active: true };
+
+    if (type) {
+      filter.type = type;
+    }
+
+    const services = await serviceDB.find(filter).toArray();
     res.json(services);
 
   } catch (error) {

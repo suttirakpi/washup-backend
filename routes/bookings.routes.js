@@ -14,11 +14,14 @@ router.post("/preview", authMiddleware, async (req, res) => {
 
   try {
     const { vehicle_id, main_service, extra_services = [] } = req.body;
+    
 
     if (!vehicle_id || !main_service) {
       return res.status(400).json({ message: "vehicle_id และ main_service จำเป็น" });
     }
-
+    if (!Array.isArray(extra_services)) {
+    return res.status(400).json({ message: "extra_services ต้องเป็น array" });
+    }
     const vehicle = await vehicles.findOne({
       vehicle_id,
       user_id: req.user.user_id
@@ -29,6 +32,10 @@ router.post("/preview", authMiddleware, async (req, res) => {
     }
 
     let total = 0;
+    let mainServicePrice = 0;
+    let extraServicesPrice = 0;
+
+    const serviceList = [];
     const allServices = [main_service, ...extra_services];
 
     for (let s of allServices) {
@@ -39,11 +46,26 @@ router.post("/preview", authMiddleware, async (req, res) => {
       }
 
       total += service.price;
-    }
 
+      // 🔥 แยก main / extra
+      if (s === main_service) {
+        mainServicePrice = service.price;
+      } else {
+        extraServicesPrice += service.price;
+      }
+
+      serviceList.push({
+        service_id: s,
+        name: service.service_name,
+        price: service.price
+      });
+    }
     const vehicle_extra = vehicle.vehicle_type_id !== 1 ? 100 : 0;
 
     res.json({
+      services: serviceList,
+      main_service_price: mainServicePrice,   // 🔥 เพิ่ม
+      extra_services_price: extraServicesPrice,
       service_total: total,
       vehicle_extra,
       total_price: total + vehicle_extra
@@ -70,6 +92,10 @@ router.post("/", authMiddleware, async (req, res) => {
 
     if (!vehicle_id || !booking_datetime || !main_service) {
       return res.status(400).json({ message: "ข้อมูลไม่ครบ" });
+    }
+    // 🔥 ใส่ตรงนี้เลย
+    if (!Array.isArray(extra_services)) {
+      return res.status(400).json({ message: "extra_services ต้องเป็น array" });
     }
 
     const vehicle = await vehicles.findOne({
@@ -135,7 +161,11 @@ router.post("/", authMiddleware, async (req, res) => {
       status: "pending",
       payment_status: "pending",
       total_price,
-      created_at: new Date()
+      created_at: new Date(),
+
+      checkin_note: null, // 🔥 เพิ่มบรรทัดนี้
+      staff_note: ""             // 🔥 เพิ่มบรรทัดนี้
+
     });
 
     res.json({
@@ -159,7 +189,7 @@ router.get("/user", authMiddleware, async (req, res) => {
   const bookings = mongoose.connection.collection("bookings");
 
   try {
-
+    
     const result = await bookings.aggregate([
 
       // 🔹 เฉพาะของ user คนนี้
@@ -227,6 +257,10 @@ router.get("/user", authMiddleware, async (req, res) => {
           payment_status: 1,
           booking_datetime: 1,
           total_price: 1,
+          checkin_note: 1,
+          staff_note: 1,
+          started_at: 1,
+          finished_at: 1,
           // 👤 USER ✅ (เพิ่มตรงนี้)
           username: "$user.login_name",
 
@@ -252,8 +286,24 @@ router.get("/user", authMiddleware, async (req, res) => {
       }
 
     ]).toArray();
+     // 🔥 map status ให้ตรง UI
+    const mapStatus = (status) => {
+      switch (status) {
+        case "pending": return "Pending";
+        case "confirmed": return "Confirmed";
+        case "washing": return "In Progress";
+        case "completed": return "Ready";
+        default: return status;
+      }
+    };
 
-    res.json(result);
+    // 🔥 เพิ่ม ui_status
+    const formatted = result.map(b => ({
+      ...b,
+      ui_status: mapStatus(b.status)
+    }));
+
+    res.json(formatted);
 
   } catch (err) {
     console.error(err);
@@ -261,82 +311,8 @@ router.get("/user", authMiddleware, async (req, res) => {
   }
 });
 
-// ===============================
-// ✅ GET SLOTS (ใช้หน้า UI) (หน้า 5 ในไฟล์)
-// =============================== 
-router.get("/slots", async (req, res) => {
 
-  const bookings = mongoose.connection.collection("bookings");
 
-  try {
-    const { date } = req.query;
-
-    const start = new Date(date);
-    start.setHours(0, 0, 0, 0);
-
-    const end = new Date(date);
-    end.setHours(23, 59, 59, 999);
-
-    const result = await bookings.aggregate([
-      {
-        $match: {
-          booking_datetime: { $gte: start, $lte: end }
-        }
-      },
-      {
-        $group: {
-          _id: "$booking_datetime",
-          count: { $sum: 1 }
-        }
-      }
-    ]).toArray();
-
-    const slots = result.map(s => ({
-      time: s._id,
-      current: s.count,
-      max: MAX_PER_SLOT
-    }));
-
-    res.json(slots);
-
-  } catch (err) {
-    res.status(500).json({ message: "slots error" });
-  }
-});
-
-// ===============================
-// ✅ GET BOOKING DETAIL ดูรายละเอียด”
-// ===============================
-router.get("/:id", authMiddleware, async (req, res) => {
-
-  const bookings = mongoose.connection.collection("bookings");
-  const booking_services = mongoose.connection.collection("booking_services");
-
-  try {
-    const bookingId = parseInt(req.params.id);
-
-    const booking = await bookings.findOne({
-      booking_id: bookingId,
-      user_id: req.user.user_id
-    });
-
-    if (!booking) {
-      return res.status(404).json({ message: "ไม่พบ booking" });
-    }
-
-    const services = await booking_services.find({
-      booking_id: bookingId
-    }).toArray();
-
-    res.json({
-      ...booking,
-      services
-    });
-
-  } catch (err) {
-    res.status(500).json({ message: "fetch booking error" });
-  }
-});
 
 
 // ===============================
@@ -348,12 +324,12 @@ router.put("/:id", authMiddleware, async (req, res) => {
 
   try {
 
-    if (req.user.user_role !== "admin" && req.user.user_role !== "owner") {
+    if (req.user.user_role !== "admin" && req.user.user_role !== "staff") {
       return res.status(403).json({ message: "forbidden" });
     }
 
     const bookingId = parseInt(req.params.id);
-    const { status } = req.body;
+    const { status, checkin_note, staff_note } = req.body;
 
     // ✅ VALIDATION
     const allowedStatus = ["pending", "confirmed", "washing", "completed", "cancelled"];
@@ -362,19 +338,31 @@ router.put("/:id", authMiddleware, async (req, res) => {
       return res.status(400).json({ message: "invalid status" });
     }
 
-    const result = await bookings.updateOne(
-      { booking_id: bookingId },
-      {
-        $set: {
-          status,
-          updated_at: new Date()
-        }
-      }
-    );
+      const update = {
+        status,
+        updated_at: new Date(),
 
-    if (result.matchedCount === 0) {
-      return res.status(404).json({ message: "ไม่พบ booking" });
-    }
+        ...(checkin_note !== undefined && { checkin_note }),
+        ...(staff_note !== undefined && { staff_note })
+      };
+
+      // 🔥 เพิ่ม 2 อันนี้
+      if (status === "washing") {
+        update.started_at = new Date();
+      }
+
+      if (status === "completed") {
+        update.finished_at = new Date();
+      }
+
+      const result = await bookings.updateOne(
+        { booking_id: bookingId },
+        { $set: update }
+      );
+
+      if (result.matchedCount === 0) {
+        return res.status(404).json({ message: "ไม่พบ booking" });
+      }
 
     res.json({ message: "updated", status });
 
@@ -397,8 +385,25 @@ router.get("/", authMiddleware, async (req, res) => {
     if (req.user.user_role !== "staff" && req.user.user_role !== "admin") {
       return res.status(403).json({ message: "ไม่มีสิทธิ์" });
     }
+    const { date } = req.query;
+
+    let matchStage = {};
+
+    if (date) {
+      const start = new Date(date);
+      start.setHours(0,0,0,0);
+
+      const end = new Date(date);
+      end.setHours(23,59,59,999);
+
+      matchStage.booking_datetime = { $gte: start, $lte: end };
+    }
 
     const result = await bookings.aggregate([
+      {
+      $match: matchStage // ✅ ใส่ตรงนี้ "ตัวแรกสุด"
+      },
+
 
       // =========================
       // 🔗 JOIN VEHICLE
@@ -462,6 +467,8 @@ router.get("/", authMiddleware, async (req, res) => {
       payment_status: 1,
       booking_datetime: 1,
       total_price: 1,
+      checkin_note: 1,
+      staff_note: 1,
 
       // 👤 USER
       username: "$user.login_name",
@@ -501,25 +508,179 @@ router.get("/", authMiddleware, async (req, res) => {
 // ===============================
 // ✅ CANCEL BOOKING (customer)
 // ===============================
-router.delete("/:id", authMiddleware, async (req, res) => {
+router.put("/:id/cancel", authMiddleware, async (req, res) => {
 
   const bookings = mongoose.connection.collection("bookings");
 
   try {
     const bookingId = parseInt(req.params.id);
 
+    const booking = await bookings.findOne({ booking_id: bookingId });
+
+    if (!booking) {
+      return res.status(404).json({ message: "ไม่พบ booking" });
+    }
+
+    if (booking.user_id !== req.user.user_id) {
+      return res.status(403).json({ message: "forbidden" });
+    }
+
+    if (booking.status === "completed") {
+      return res.status(400).json({ message: "ยกเลิกไม่ได้" });
+    }
+
     await bookings.updateOne(
-      { booking_id: bookingId, user_id: req.user.user_id },
-      { $set: { status: "cancelled" } }
+      { booking_id: bookingId },
+      {
+        $set: {
+          status: "cancelled",
+          updated_at: new Date()
+        }
+      }
     );
 
-    res.json({ message: "cancelled" });
+    res.json({ message: "cancel success" });
 
   } catch (err) {
     res.status(500).json({ message: "cancel error" });
   }
 });
+// ===============================
+// ✅ GET AVAILABLE SLOTS (หน้าเลือกเวลา)
+// ===============================
+router.get("/slots", authMiddleware, async (req, res) => {
+  const bookings = mongoose.connection.collection("bookings");
 
+  try {
+    const { date } = req.query;
 
+    if (!date) {
+      return res.status(400).json({ message: "date required" });
+    }
 
+    // เวลาตาม UI
+    const TIMES = ["09:00", "10:30", "12:00", "13:30", "15:00", "16:30", "18:00"];
+
+    const start = new Date(date);
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date(date);
+    end.setHours(23, 59, 59, 999);
+
+    const dayBookings = await bookings.find({
+      booking_datetime: { $gte: start, $lte: end }
+    }).toArray();
+
+    const result = TIMES.map(time => {
+      const [h, m] = time.split(":");
+
+      const slotDate = new Date(`${date}T${time}:00`);
+      slotDate.setHours(parseInt(h), parseInt(m), 0, 0);
+
+      const count = dayBookings.filter(b => {
+        return new Date(b.booking_datetime).getTime() === slotDate.getTime();
+      }).length;
+
+      return {
+        time,
+        count,
+        max: MAX_PER_SLOT
+      };
+    });
+
+    res.json(result);
+
+  } catch (err) {
+    res.status(500).json({ message: "slot error" });
+  }
+});
+
+router.get("/:id", authMiddleware, async (req, res) => {
+
+  const bookings = mongoose.connection.collection("bookings");
+  const vehicles = mongoose.connection.collection("vehicles");
+  const users = mongoose.connection.collection("users");
+  const bookingServices = mongoose.connection.collection("booking_services");
+  const services = mongoose.connection.collection("service");
+
+  try {
+    const bookingId = parseInt(req.params.id);
+
+    const booking = await bookings.findOne({ booking_id: bookingId });
+
+    if (!booking) {
+      return res.status(404).json({ message: "ไม่พบ booking" });
+    }
+
+    const vehicle = await vehicles.findOne({ vehicle_id: booking.vehicle_id });
+    const user = await users.findOne({ user_id: booking.user_id });
+
+    const serviceData = await bookingServices.aggregate([
+      { $match: { booking_id: bookingId } },
+      {
+        $lookup: {
+          from: "service",
+          localField: "service_id",
+          foreignField: "service_id",
+          as: "service"
+        }
+      },
+      { $unwind: "$service" }
+    ]).toArray();
+
+    res.json({
+      booking_id: booking.booking_id,
+      status: booking.status,
+      payment_status: booking.payment_status,
+      booking_datetime: booking.booking_datetime,
+      total_price: booking.total_price,
+
+      checkin_note: booking.checkin_note,
+      staff_note: booking.staff_note,
+
+      started_at: booking.started_at,
+      finished_at: booking.finished_at,
+
+      customer: user?.login_name,
+      vehicle: {
+        plate: vehicle?.license_plate,
+        brand: vehicle?.brand,
+        model: vehicle?.model
+      },
+
+      services: serviceData.map(s => s.service.service_name)
+    });
+
+  } catch (err) {
+    res.status(500).json({ message: "fetch booking error" });
+  }
+});
+router.put("/:id/finish", authMiddleware, async (req, res) => {
+
+  const bookings = mongoose.connection.collection("bookings");
+
+  try {
+    if (req.user.user_role !== "admin" && req.user.user_role !== "staff") {
+      return res.status(403).json({ message: "forbidden" });
+    }
+
+    const bookingId = parseInt(req.params.id);
+
+    await bookings.updateOne(
+      { booking_id: bookingId },
+      {
+        $set: {
+          status: "completed",
+          finished_at: new Date(),
+          updated_at: new Date()
+        }
+      }
+    );
+
+    res.json({ message: "job finished" });
+
+  } catch (err) {
+    res.status(500).json({ message: "finish error" });
+  }
+});
 module.exports = router;

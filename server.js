@@ -20,6 +20,7 @@ const bookingsRoutes = require("./routes/bookings.routes");
 const paymentRoutes = require("./routes/payment.routes");
 const reviewRoutes = require("./routes/review.routes");
 const dashboardRoutes = require("./routes/dashboard.routes");
+const vehicleTypeRoutes = require("./routes/vehicleType.routes");
 
 
 
@@ -30,7 +31,7 @@ app.use("/api/bookings", bookingsRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/dashboard", dashboardRoutes);
-
+app.use("/api/vehicle-types", vehicleTypeRoutes);
 
 
 
