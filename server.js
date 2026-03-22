@@ -1,52 +1,47 @@
 const express = require("express"); // ใช้สร้าง API Server
 const mongoose = require("mongoose"); // ใช้เชื่อมต่อ MongoDB
+const path = require("path");
+const cors = require("cors");
 
 const app = express(); // สร้างตัวแอป server
+
 app.use(express.json());
+app.use(cors());// อนุญาต CORS
+
 
 // เชื่อมต่อ Database
 mongoose.connect("mongodb://127.0.0.1:27017/carwashDB");
 
-const bcrypt = require("bcrypt"); // ใช้เข้ารหัสรหัสผ่าน ทำให้คนอื่นไม่สามารถเห็นรหัสผ่านจริงได้
-const jwt = require("jsonwebtoken"); // ใช้สร้าง token สำหรับ authentication
-const SECRET = "mysecretkey"; // key สำหรับเข้ารหัส token
-const cors = require("cors");
-app.use(cors()); // อนุญาตให้ Frontend ยิง API เข้ามาได้
+const authMiddleware = require("./middlewares/auth");
+const userRoutes = require("./routes/user.routes");
+const vehicleRoutes = require("./routes/vehicles.routes");
+const serviceRoutes = require("./routes/service.routes");
+const bookingsRoutes = require("./routes/bookings.routes");
+const paymentRoutes = require("./routes/payment.routes");
+const reviewRoutes = require("./routes/review.routes");
+const dashboardRoutes = require("./routes/dashboard.routes");
+const vehicleTypeRoutes = require("./routes/vehicleType.routes");
 
-// API สำหรับ Users (ผู้ใช้)//
 
-app.post("/users/register", async (req, res) => {
-  //ใช้สำหรับลงทะเบียนผู้ใช้ใหม่ โดยรับข้อมูลจาก client ผ่าน HTTP POST และบันทึกลงใน MongoDB
-  const db = mongoose.connection.collection("users");
 
-  try {
-    //เช็คข้อมูลครบไหมหรือไม่
-    if (
-      !req.body.login_name ||
-      !req.body.login_password ||
-      !req.body.fullname ||
-      !req.body.phone
-    ) {
-      return res.status(400).json({ message: "please fill all fields" });
-    }
+app.use("/api/users", userRoutes);
+app.use("/api/vehicles", vehicleRoutes);
+app.use("/api/services", serviceRoutes);
+app.use("/api/bookings", bookingsRoutes);
+app.use("/api/payments", paymentRoutes);
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/vehicle-types", vehicleTypeRoutes);
 
-    //ตรวจสอบความแข็งแรงของรหัสผ่าน
-    const password = req.body.login_password;
-    const strongPassword = /^(?=.*[A-Z])(?=.*[!@#$%]).{8,}$/;
 
-    if (!strongPassword.test(password)) {
-      return res.status(400).json({
-        message:
-          "Password must be at least 8 characters, include 1 uppercase letter and 1 special character",
-      });
-    }
 
-    //เช็คว่ามี username ซ้ำไหม
-    const existingUser = await db.findOne({ login_name: req.body.login_name });
-    if (existingUser) {
-      return res.status(400).json({ message: "Username already exists" });
-    }
+//app.use(express.static(path.join(__dirname, "dist")));// อนุญาตให้ Frontend ยิง API เข้ามาได้
+// หน้า staff
+//app.get("/staff", (req, res) => {
+  //res.sendFile(path.join(__dirname, "dist", "staff", "index.html"));
+//});
 
+<<<<<<< HEAD
     // หา user ล่าสุด
     const lastUser = await db.find().sort({ user_id: -1 }).limit(1).toArray();
 
@@ -361,6 +356,12 @@ app.put("/vehicles/:id", authMiddleware, async (req, res) => {
     });
   }
 });
+=======
+// React router fallback
+//app.use((req, res) => {
+//  res.sendFile(path.join(__dirname, "dist", "index.html"));//
+//});
+>>>>>>> back
 
 // API สำหรับลบรถ
 app.delete("/vehicles/:id", authMiddleware, async (req, res) => {
@@ -855,5 +856,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log("Server running on port " + PORT);
 });
-
-//1
