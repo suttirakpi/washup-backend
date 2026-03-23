@@ -1,54 +1,56 @@
 const express = require("express"); // ใช้สร้าง API Server
 const mongoose = require("mongoose"); // ใช้เชื่อมต่อ MongoDB
 const path = require("path");
+const cors = require("cors");
 
 const app = express(); // สร้างตัวแอป server
+
 app.use(express.json());
+app.use(cors());// อนุญาต CORS
+
 
 // เชื่อมต่อ Database
 mongoose.connect("mongodb://127.0.0.1:27017/carwashDB");
 
+<<<<<<< HEAD
 const bcrypt = require("bcrypt"); // ใช้เข้ารหัสรหัสผ่าน ทำให้คนอื่นไม่สามารถเห็นรหัสผ่านจริงได้
 const jwt = require("jsonwebtoken"); // ใช้สร้าง token สำหรับ authentication
 const SECRET = "mysecretkey"; // key สำหรับเข้ารหัส token
 const cors = require("cors");
 app.use(cors()); // อนุญาต CORS
 app.use(express.static(path.join(__dirname, "dist"))); // อนุญาตให้ Frontend ยิง API เข้ามาได้
+=======
+const authMiddleware = require("./middlewares/auth");
+const userRoutes = require("./routes/user.routes");
+const vehicleRoutes = require("./routes/vehicles.routes");
+const serviceRoutes = require("./routes/service.routes");
+const bookingsRoutes = require("./routes/bookings.routes");
+const paymentRoutes = require("./routes/payment.routes");
+const reviewRoutes = require("./routes/review.routes");
+const dashboardRoutes = require("./routes/dashboard.routes");
+const vehicleTypeRoutes = require("./routes/vehicleType.routes");
+>>>>>>> main
 
-// API สำหรับ Users (ผู้ใช้)//
-//role public
-app.post("/api/users/register", async (req, res) => {
-  //ใช้สำหรับลงทะเบียนผู้ใช้ใหม่ โดยรับข้อมูลจาก client ผ่าน HTTP POST และบันทึกลงใน MongoDB
-  const db = mongoose.connection.collection("users");
 
-  try {
-    //เช็คข้อมูลครบไหมหรือไม่
-    if (
-      !req.body.login_name ||
-      !req.body.login_password ||
-      !req.body.fullname ||
-      !req.body.phone
-    ) {
-      return res.status(400).json({ message: "please fill all fields" });
-    }
 
-    //ตรวจสอบความแข็งแรงของรหัสผ่าน
-    const password = req.body.login_password;
-    const strongPassword = /^(?=.*[A-Z])(?=.*[!@#$%]).{8,}$/;
+app.use("/api/users", userRoutes);
+app.use("/api/vehicles", vehicleRoutes);
+app.use("/api/services", serviceRoutes);
+app.use("/api/bookings", bookingsRoutes);
+app.use("/api/payments", paymentRoutes);
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/vehicle-types", vehicleTypeRoutes);
 
-    if (!strongPassword.test(password)) {
-      return res.status(400).json({
-        message:
-          "Password must be at least 8 characters, include 1 uppercase letter and 1 special character",
-      });
-    }
 
-    //เช็คว่ามี username ซ้ำไหม
-    const existingUser = await db.findOne({ login_name: req.body.login_name });
-    if (existingUser) {
-      return res.status(400).json({ message: "Username already exists" });
-    }
 
+//app.use(express.static(path.join(__dirname, "dist")));// อนุญาตให้ Frontend ยิง API เข้ามาได้
+// หน้า staff
+//app.get("/staff", (req, res) => {
+  //res.sendFile(path.join(__dirname, "dist", "staff", "index.html"));
+//});
+
+<<<<<<< HEAD
     // หา user ล่าสุด
     const lastUser = await db.find().sort({ user_id: -1 }).limit(1).toArray();
 
@@ -80,8 +82,8 @@ app.post("/api/users/register", async (req, res) => {
     res.status(500).json({ message: "server error" });
   }
 });
-//role public
-app.post("/api/users/login", async (req, res) => {
+
+app.post("/users/login", async (req, res) => {
   //ใช้สำหรับเข้าสู่ระบบผู้ใช้ โดยรับข้อมูลจาก client ผ่าน HTTP POST และตรวจสอบกับข้อมูลใน MongoDB
 
   const db = mongoose.connection.collection("users");
@@ -111,6 +113,7 @@ app.post("/api/users/login", async (req, res) => {
       return res.status(400).json({ message: "wrong password" });
     }
 
+<<<<<<< HEAD
     // สร้าง token และเก็บ role ไว้ด้วย
     const token = jwt.sign(
       {
@@ -122,6 +125,13 @@ app.post("/api/users/login", async (req, res) => {
         expiresIn: "1h",
       },
     );
+=======
+    // สร้าง token
+    const token = jwt.sign({ user_id: user.user_id }, SECRET, {
+      expiresIn: "1h",
+    });
+
+>>>>>>> main
     // login สำเร็จ
     res.json({
       message: "login success",
@@ -154,9 +164,8 @@ function authMiddleware(req, res, next) {
   }
 }
 
-//role customer adim staff
 // API สำหรับดึงข้อมูลผู้ใช้ตาม user_id ทำส่วนหน้าโปรไฟล์ของผู้ใช้
-app.get("/api/users/:id", authMiddleware, async (req, res) => {
+app.get("/users/:id", authMiddleware, async (req, res) => {
   // เชื่อม collection users ใน MongoDB
   const db = mongoose.connection.collection("users");
 
@@ -190,9 +199,8 @@ app.get("/api/users/:id", authMiddleware, async (req, res) => {
   }
 });
 
-//role customer adim staff
 // API สำหรับแก้ไขข้อมูลผู้ใช้ ทำส่วนหน้าโปรไฟล์ของผู้ใช้
-app.put("/api/users/:id", authMiddleware, async (req, res) => {
+app.put("/users/:id", authMiddleware, async (req, res) => {
   // เชื่อม collection users
   const db = mongoose.connection.collection("users");
   try {
@@ -231,9 +239,14 @@ app.put("/api/users/:id", authMiddleware, async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
 //role customer
+=======
+//API สำหรับ Vehicles (รถของลูกค้า)//
+
+>>>>>>> main
 // API สำหรับเพิ่มข้อมูลรถ หน้า Add Vehicle (เพิ่มรถ)
-app.post("/api/vehicles", authMiddleware, async (req, res) => {
+app.post("/vehicles", authMiddleware, async (req, res) => {
   // เชื่อม collection vehicles
   const db = mongoose.connection.collection("vehicles");
   try {
@@ -286,9 +299,8 @@ app.post("/api/vehicles", authMiddleware, async (req, res) => {
   }
 });
 
-//role customer
 // API สำหรับดึงรถทั้งหมดของ user (ใช้ token)
-app.get("/api/vehicles/user", authMiddleware, async (req, res) => {
+app.get("/vehicles/user", authMiddleware, async (req, res) => {
   const db = mongoose.connection.collection("vehicles");
 
   try {
@@ -314,9 +326,13 @@ app.get("/api/vehicles/user", authMiddleware, async (req, res) => {
   }
 });
 
-//role customer
 // API สำหรับแก้ไขข้อมูลรถ
+<<<<<<< HEAD
 app.put("/api/vehicles/:id", authMiddleware, async (req, res) => {
+=======
+app.put("/vehicles/:id", authMiddleware, async (req, res) => {
+
+>>>>>>> main
   const db = mongoose.connection.collection("vehicles");
 
   try {
@@ -369,10 +385,22 @@ app.put("/api/vehicles/:id", authMiddleware, async (req, res) => {
     });
   }
 });
+=======
+// React router fallback
+//app.use((req, res) => {
+//  res.sendFile(path.join(__dirname, "dist", "index.html"));//
+//});
+>>>>>>> back
 
+<<<<<<< HEAD
 //role customer
 // API สำหรับลบรถ
 app.delete("/api/vehicles/:id", authMiddleware, async (req, res) => {
+=======
+// API สำหรับลบรถ
+app.delete("/vehicles/:id", authMiddleware, async (req, res) => {
+
+>>>>>>> main
   const db = mongoose.connection.collection("vehicles");
 
   try {
@@ -396,6 +424,26 @@ app.delete("/api/vehicles/:id", authMiddleware, async (req, res) => {
     res.json({
       message: "vehicle deleted successfully",
     });
+<<<<<<< HEAD
+=======
+
+  } catch (error) {
+
+    res.status(500).json({
+      message: "server error"
+    });
+
+  }
+
+});
+
+    //services // API สำหรับดึงข้อมูลประเภทบริการล้างรถทั้งหมด
+app.get("/service", async (req, res) => {
+  const db = mongoose.connection.collection("service");
+  try{
+    const services = await db.find({ is_active: true }).toArray();
+    res.json(services);
+>>>>>>> main
   } catch (error) {
     res.status(500).json({
       message: "server error",
@@ -403,6 +451,7 @@ app.delete("/api/vehicles/:id", authMiddleware, async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
 // role: admin
 // API สำหรับเพิ่มแพ็กเกจบริการใหม่ (ใช้ในหน้า owner จัดการแพ็กเกจ)
 
@@ -856,6 +905,30 @@ app.delete("/api/vehicle-types/:id", authMiddleware, async (req, res) => {
 // POST /bookings
 // สร้าง booking และ booking_services โดยให้ id เพิ่มเอง
 app.post("/api/bookings", authMiddleware, async (req, res) => {
+=======
+ //service-prices // API สำหรับดึงข้อมูลราคาบริการล้างรถทั้งหมด
+ app.get("/service-prices", async (req, res) => {
+  const db = mongoose.connection.collection("service_prices");
+  try{
+    const prices  = await db.find({ }).toArray();
+    res.json(prices);
+  }catch (error) {
+  res.status(500).json({
+    message: "server error"
+  });
+ }
+});
+    //API bookings //
+
+// POST /bookings
+// ใช้สร้างการจองใหม่
+
+// POST /bookings
+// สร้าง booking และ booking_services โดยให้ id เพิ่มเอง
+
+app.post("/bookings", authMiddleware, async (req, res) => {
+
+>>>>>>> main
   const bookings = mongoose.connection.collection("bookings");
   const booking_services = mongoose.connection.collection("booking_services");
   const vehicles = mongoose.connection.collection("vehicles");
@@ -863,6 +936,7 @@ app.post("/api/bookings", authMiddleware, async (req, res) => {
 
   try {
     const { vehicle_id, booking_datetime, services } = req.body;
+<<<<<<< HEAD
     if (!vehicle_id || !booking_datetime) {
       return res.status(400).json({
         message: "vehicle_id and booking_datetime required",
@@ -875,6 +949,9 @@ app.post("/api/bookings", authMiddleware, async (req, res) => {
         message: "at least one service required",
       });
     }
+=======
+
+>>>>>>> main
     // -----------------------------
     // สร้าง booking_id อัตโนมัติ
     // -----------------------------
@@ -957,11 +1034,20 @@ app.post("/api/bookings", authMiddleware, async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
 //role customer
 // GET /bookings/user
 // ดึงรายการ booking ทั้งหมดของ user ที่ login อยู่
 
 app.get("/api/bookings/user", authMiddleware, async (req, res) => {
+=======
+// GET /bookings/user
+// ดึงรายการ booking ทั้งหมดของ user ที่ login อยู่
+// ใช้ aggregate + lookup เพื่อ join vehicles
+
+app.get("/bookings/user", authMiddleware, async (req, res) => {
+
+>>>>>>> main
   const db = mongoose.connection.collection("bookings");
 
   try {
@@ -1000,6 +1086,7 @@ app.get("/api/bookings/user", authMiddleware, async (req, res) => {
           },
         },
 
+<<<<<<< HEAD
         // 5️⃣ เลือก field ที่ต้องการส่งกลับ
         {
           $project: {
@@ -1007,6 +1094,14 @@ app.get("/api/bookings/user", authMiddleware, async (req, res) => {
             booking_id: 1,
             booking_datetime: 1,
             status: 1,
+=======
+      // 4️⃣ เรียงตามวันที่จองล่าสุด
+      {
+        $sort: {
+          booking_datetime: -1
+        }
+      },
+>>>>>>> main
 
             "vehicle.brand": 1,
             "vehicle.model": 1,
@@ -1024,17 +1119,26 @@ app.get("/api/bookings/user", authMiddleware, async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
 //role customer
 // GET /bookings/:id
 // ดึงรายละเอียด booking พร้อมข้อมูลรถ และบริการที่เลือก
 
 app.get("/api/bookings/:id", authMiddleware, async (req, res) => {
+=======
+// GET /bookings/:id
+// ดึงรายละเอียด booking พร้อมข้อมูลรถ และบริการที่เลือก
+
+app.get("/bookings/:id", authMiddleware, async (req, res) => {
+
+>>>>>>> main
   const db = mongoose.connection.collection("bookings");
 
   try {
     // รับ booking_id จาก URL
     const bookingId = parseInt(req.params.id);
 
+<<<<<<< HEAD
     const result = await db
       .aggregate([
         // 1️⃣ หา booking ตาม id
@@ -1042,6 +1146,68 @@ app.get("/api/bookings/:id", authMiddleware, async (req, res) => {
           $match: {
             booking_id: bookingId,
             user_id: req.user.user_id,
+=======
+    const result = await db.aggregate([
+
+      // 1️⃣ หา booking ตาม id
+      {
+        $match: {
+          booking_id: bookingId
+        }
+      },
+
+      // 2️⃣ join vehicles
+      {
+        $lookup: {
+          from: "vehicles",
+          localField: "vehicle_id",
+          foreignField: "vehicle_id",
+          as: "vehicle"
+        }
+      },
+
+      {
+        $unwind: "$vehicle"
+      },
+
+      // 3️⃣ join booking_services
+      {
+        $lookup: {
+          from: "booking_services",
+          localField: "booking_id",
+          foreignField: "booking_id",
+          as: "booking_services"
+        }
+      },
+
+      // 4️⃣ join service เพื่อเอา service_name
+      {
+        $lookup: {
+          from: "service",
+          localField: "booking_services.service_id",
+          foreignField: "service_id",
+          as: "services"
+        }
+      },
+
+      // 5️⃣ format ข้อมูล
+      {
+        $project: {
+          _id: 0,
+          booking_id: 1,
+          status: 1,
+          booking_datetime: 1,
+
+          checkin_note: 1,
+          staff_note: 1,
+          started_at: 1,
+          finished_at: 1,
+
+          vehicle: {
+            brand: "$vehicle.brand",
+            model: "$vehicle.model",
+            license_plate: "$vehicle.license_plate"
+>>>>>>> main
           },
         },
 
@@ -1126,6 +1292,7 @@ app.get("/api/bookings/:id", authMiddleware, async (req, res) => {
     });
   }
 });
+<<<<<<< HEAD
 
 //role customer
 // DELETE /bookings/:id
@@ -1133,6 +1300,14 @@ app.get("/api/bookings/:id", authMiddleware, async (req, res) => {
 
 app.delete("/api/bookings/:id", authMiddleware, async (req, res) => {
   // เชื่อมต่อ collectionF ต่าง ๆ
+=======
+// DELETE /bookings/:id
+// ใช้สำหรับยกเลิก / ลบ booking
+
+app.delete("/bookings/:id", authMiddleware, async (req, res) => {
+
+  // เชื่อมต่อ collection ต่าง ๆ
+>>>>>>> main
   const bookings = mongoose.connection.collection("bookings");
   const booking_services = mongoose.connection.collection("booking_services");
 
@@ -1140,12 +1315,20 @@ app.delete("/api/bookings/:id", authMiddleware, async (req, res) => {
     // รับ booking_id จาก URL
     const bookingId = parseInt(req.params.id);
 
+<<<<<<< HEAD
     // -----------------------------F
     // ตรวจสอบว่ามี booking นี้อยู่ไหม
     // -----------------------------
     const booking = await bookings.findOne({
       booking_id: bookingId,
       user_id: req.user.user_id,
+=======
+    // -----------------------------
+    // ตรวจสอบว่ามี booking นี้อยู่ไหม
+    // -----------------------------
+    const booking = await bookings.findOne({
+      booking_id: bookingId
+>>>>>>> main
     });
 
     if (!booking) {
@@ -1179,6 +1362,7 @@ app.delete("/api/bookings/:id", authMiddleware, async (req, res) => {
     });
   }
 });
+<<<<<<< HEAD
 
 //role staff admin
 // staff หรือ admin ดู booking ทั้งหมด
@@ -1269,16 +1453,31 @@ app.get("/api/booking-slots", async (req, res) => {
 // เช่น เริ่มล้าง หรือ ล้างเสร็จ
 
 app.put("/api/bookings/:id", authMiddleware, async (req, res) => {
+=======
+// PUT /bookings/:id
+// ใช้สำหรับพนักงาน update สถานะการล้างรถ
+// เช่น เริ่มล้าง หรือ ล้างเสร็จ
+
+// PUT /bookings/:id
+// ใช้สำหรับพนักงาน update สถานะการล้างรถ
+// เช่น เริ่มล้าง หรือ ล้างเสร็จ
+
+app.put("/bookings/:id", authMiddleware, async (req, res) => {
+
+>>>>>>> main
   // เชื่อมต่อ collection bookings
   const db = mongoose.connection.collection("bookings");
 
   try {
+<<<<<<< HEAD
     // ตรวจ role
     if (req.user.user_role !== "staff" && req.user.user_role !== "admin") {
       return res.status(403).json({
         message: "access denied",
       });
     }
+=======
+>>>>>>> main
 
     // รับ booking_id จาก URL
     const bookingId = parseInt(req.params.id);
@@ -1288,10 +1487,13 @@ app.put("/api/bookings/:id", authMiddleware, async (req, res) => {
 
     // object สำหรับเก็บ field ที่จะ update
     let updateData = {};
+<<<<<<< HEAD
     // staff ยืนยันคิว
     if (status === "confirmed") {
       updateData.status = "confirmed";
     }
+=======
+>>>>>>> main
 
     // -----------------------------
     // กรณีพนักงานเริ่มล้างรถ
@@ -1348,6 +1550,7 @@ app.put("/api/bookings/:id", authMiddleware, async (req, res) => {
     });
   }
 });
+<<<<<<< HEAD
 
 //role customer
 // ใช้สำหรับให้ลูกค้าให้คะแนนหลังล้างรถเสร็จ
@@ -2113,6 +2316,8 @@ app.put("/bookings/:id", authMiddleware, async (req, res) => {
     });
   }
 });
+=======
+>>>>>>> main
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
