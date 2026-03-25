@@ -28,8 +28,8 @@ export default function Login() {
         // ล็อกอินสำเร็จ เก็บ Token ไว้ใช้งาน
         localStorage.setItem("token", data.token);
 
-        localStorage.setItem("userName", data.user.fullname);
-        // 4️⃣ เช็คสิทธิ์ด้วยคำว่า user_role
+        localStorage.setItem("user", JSON.stringify(data.user));
+        // เช็คสิทธิ์ด้วยคำว่า user_role
         if (data.user.user_role === "admin") {
           navigate("/admin"); // ถ้าเป็นเจ้าของ เด้งไปหน้ากราฟรายได้
         } else if (data.user.user_role === "staff") {

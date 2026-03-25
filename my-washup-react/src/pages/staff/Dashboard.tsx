@@ -165,10 +165,11 @@ export default function StaffDashboard() {
                   </div>
                   <div className="card-car-info">
                     <div className="car-model">
-                      {job.vehicle.brand} {job.vehicle.model}
+                      {job.vehicle?.brand || "ไม่ระบุ"}{" "}
+                      {job.vehicle?.model || ""}
                     </div>
                     <div className="car-license">
-                      ทะเบียน: {job.vehicle.license_plate}
+                      ทะเบียน: {job.vehicle?.license_plate || "ไม่ระบุ"}
                     </div>
                   </div>
                   <div className="card-services">
@@ -222,10 +223,11 @@ export default function StaffDashboard() {
                   </div>
                   <div className="card-car-info">
                     <div className="car-model">
-                      {job.vehicle.brand} {job.vehicle.model}
+                      {job.vehicle?.brand || "ไม่ระบุ"}{" "}
+                      {job.vehicle?.model || ""}
                     </div>
                     <div className="car-license">
-                      ทะเบียน: {job.vehicle.license_plate}
+                      ทะเบียน: {job.vehicle?.license_plate || "ไม่ระบุ"}
                     </div>
                   </div>
                   <div className="card-services">
@@ -284,10 +286,11 @@ export default function StaffDashboard() {
                   </div>
                   <div className="card-car-info">
                     <div className="car-model">
-                      {job.vehicle.brand} {job.vehicle.model}
+                      {job.vehicle?.brand || "ไม่ระบุ"}{" "}
+                      {job.vehicle?.model || ""}
                     </div>
                     <div className="car-license">
-                      ทะเบียน: {job.vehicle.license_plate}
+                      ทะเบียน: {job.vehicle?.license_plate || "ไม่ระบุ"}
                     </div>
                   </div>
                   <div className="card-services">
@@ -339,10 +342,11 @@ export default function StaffDashboard() {
                   </div>
                   <div className="card-car-info">
                     <div className="car-model">
-                      {job.vehicle.brand} {job.vehicle.model}
+                      {job.vehicle?.brand || "ไม่ระบุ"}{" "}
+                      {job.vehicle?.model || ""}
                     </div>
                     <div className="car-license">
-                      ทะเบียน: {job.vehicle.license_plate}
+                      ทะเบียน: {job.vehicle?.license_plate || "ไม่ระบุ"}
                     </div>
                   </div>
                   <div className="card-services">
@@ -559,8 +563,8 @@ export default function StaffDashboard() {
                 }}
               >
                 <div>
-                  🚗 {showInspectionModal.vehicle.brand}{" "}
-                  {showInspectionModal.vehicle.model}
+                  🚗 {showInspectionModal.vehicle?.brand || "ไม่ระบุ"}{" "}
+                  {showInspectionModal.vehicle?.model || ""}
                 </div>
                 <div style={{ marginTop: "5px" }}>
                   ⏰ ลูกค้าเข้า :{" "}
@@ -876,8 +880,8 @@ export default function StaffDashboard() {
                 }}
               >
                 <div>
-                  🚗 {showPaymentModal.vehicle.brand}{" "}
-                  {showPaymentModal.vehicle.model}
+                  🚗 {showPaymentModal.vehicle?.brand || "ไม่ระบุ"}{" "}
+                  {showPaymentModal.vehicle?.model || ""}
                 </div>
                 <div style={{ marginTop: "5px" }}>
                   ⏰ ลูกค้าเข้า :{" "}
