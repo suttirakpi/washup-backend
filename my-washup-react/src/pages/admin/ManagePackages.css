@@ -1,0 +1,173 @@
+/* ManagePackages.css */
+.package-container {
+  padding: 40px 5%;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: "Kanit", sans-serif;
+}
+
+.package-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.package-title h2 {
+  font-size: 24px;
+  font-weight: 900;
+  color: #1a202c;
+  margin: 0;
+}
+
+.package-title p {
+  font-size: 14px;
+  color: #718096;
+  margin-top: 5px;
+}
+
+.btn-add {
+  background-color: #d71920;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: 0.2s;
+}
+.btn-add:hover {
+  background-color: #b9151b;
+}
+
+.package-table-wrapper {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.package-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.package-table th {
+  background-color: #f8fafc;
+  padding: 15px 20px;
+  text-align: left;
+  font-size: 12px;
+  color: #64748b;
+  text-transform: uppercase;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.package-table td {
+  padding: 15px 20px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #334155;
+  font-size: 14px;
+}
+
+.package-table tr:last-child td {
+  border-bottom: none;
+}
+
+.action-btns {
+  display: flex;
+  gap: 15px;
+}
+.action-btns button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #94a3b8;
+  transition: 0.2s;
+}
+.btn-edit:hover {
+  color: #3b82f6;
+}
+.btn-delete:hover {
+  color: #ef4444;
+}
+
+.table-footer {
+  margin-top: 15px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+/* Modal (Popup) */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  width: 400px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+.modal-content h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #1a202c;
+}
+.form-group {
+  margin-bottom: 15px;
+}
+.form-group label {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 5px;
+  color: #4a5568;
+  font-weight: bold;
+}
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-family: "Kanit", sans-serif;
+  box-sizing: border-box;
+}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+.btn-cancel {
+  background: #e2e8f0;
+  color: #475569;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+.btn-save {
+  background: #10b981;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
