@@ -216,14 +216,7 @@ export default function Home() {
 
       <section className="ready-bg">
         <h2>พร้อมให้รถคันโปรดของคุณ กลับมาสวยเหมือนเดิมหรือยัง</h2>
-        <div className="ready-btns">
-          <Link to="/register" className="btn-cta reg">
-            สมัครสมาชิก
-          </Link>
-          <Link to="/login" className="btn-cta log">
-            เข้าสู่ระบบ
-          </Link>
-        </div>
+        
       </section>
     </>
   );

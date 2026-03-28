@@ -4,32 +4,85 @@ import { Link, useNavigate } from 'react-router-dom';
 
 const BookingPage = () => {
   const navigate = useNavigate();
-  const [selectedService, setSelectedService] = useState<string>('');
-  const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
-  const [selectedDate, setSelectedDate] = useState<string>('24');
+  
+  // --- 1. States ---
+  const [mainServices, setMainServices] = useState<any[]>([]); // ดึงจาก DB
+  const [addons, setAddons] = useState<any[]>([]);             // ดึงจาก DB
+  const [dates, setDates] = useState<any[]>([]);               // สร้างแบบ Dynamic
+  const [selectedService, setSelectedService] = useState<number | ''>('');
+  const [selectedAddons, setSelectedAddons] = useState<number[]>([]);
+  const [selectedDate, setSelectedDate] = useState<string>(''); // จะถูก set เมื่อโหลด dates เสร็จ
   const [selectedTime, setSelectedTime] = useState<string>('');
-
-  // --- ส่วนจัดการข้อมูลรถ ---
   const [vehicles, setVehicles] = useState<any[]>([]);
   const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [allBookings, setAllBookings] = useState<any[]>([]);
+  const [previewData, setPreviewData] = useState<any>(null);
 
+  // --- 2. Logic สำหรับสร้างวันที่ (7 วันล่วงหน้า) ---
+  const generateBookingDates = () => {
+  const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+  const result = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() + i);
+    const dateStr = d.getDate().toString().padStart(2, '0');
+    const monthStr = (d.getMonth() + 1).toString().padStart(2, '0');
+    const fullDate = `${d.getFullYear()}-${monthStr}-${dateStr}`;
+    
+    result.push({
+      day: days[d.getDay()],
+      date: dateStr,
+      fullDate: fullDate // เราจะใช้ตัวนี้เป็น ID หลัก
+    });
+  }
+  return result;
+};
+
+  // --- 3. Effects (Fetching Data) ---
   useEffect(() => {
-    const fetchVehicles = async () => {
+    const fetchData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:3000/api/vehicles/user',  {
+        
+        // 1. สร้างวันที่แบบ Dynamic
+        const generatedDates = generateBookingDates();
+        setDates(generatedDates);
+        setSelectedDate(generatedDates[0].fullDate);
+
+        // 2. Fetch Services จาก Database (แยก Main/Addons ตามช่วง ID)
+        // หมายเหตุ: ใช้ endpoint เดียวกับที่คุณดึงในหน้าอื่น หรือสร้างใหม่ใน Backend
+        const svcResponse = await fetch('http://localhost:3000/api/services'); 
+        const svcResult = await svcResponse.json();
+        if (svcResponse.ok) {
+          const allServices = svcResult.data || svcResult;
+
+            // แยกบริการหลักด้วย type: 'main'
+            setMainServices(allServices.filter((s: any) => s.type === 'main').map((s: any) => ({
+              id: s.service_id, 
+              name: s.service_name, 
+              price: s.price, 
+              desc: s.description
+            })));
+
+            // แยกบริการเสริมด้วย type: 'extra'
+            setAddons(allServices.filter((s: any) => s.type === 'extra').map((s: any) => ({
+              id: s.service_id, 
+              name: s.service_name, 
+              price: s.price, 
+              desc: s.description
+            })));
+        }
+
+        // 3. Fetch Vehicles
+        const vehResponse = await fetch('http://localhost:3000/api/vehicles/user', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
-        
-        const result = await response.json();
-        
-        if (response.ok) {
-          const vehicleData = result.data || result; 
-          
+        const vehResult = await vehResponse.json();
+        if (vehResponse.ok) {
+          const vehicleData = vehResult.data || vehResult;
           if (Array.isArray(vehicleData) && vehicleData.length > 0) {
             setVehicles(vehicleData);
-            // แก้ไข: ดึง vehicle_id มาเป็นค่าเริ่มต้น (เพราะใน DB ใช้ฟิลด์นี้เป็น Number)
             const initialId = vehicleData[0].vehicle_id || vehicleData[0]._id;
             setSelectedVehicleId(initialId.toString());
           }
@@ -40,10 +93,95 @@ const BookingPage = () => {
         setLoading(false);
       }
     };
-    fetchVehicles();
+    fetchData();
   }, []);
 
-  // --- ฟังก์ชันบันทึกการจอง ---
+  // Fetch Slots เมื่อวันที่เปลี่ยน
+  // ค้นหา useEffect สำหรับ fetchSlots (ประมาณบรรทัดที่ 84)
+useEffect(() => {
+  const fetchSlots = async () => {
+    if (!selectedDate) return;
+
+    const token = localStorage.getItem('token');
+
+    try {
+      const slotResponse = await fetch(
+        `http://localhost:3000/api/bookings/slots?date=${selectedDate}`,
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+
+      const slotResult = await slotResponse.json();
+
+      if (slotResponse.ok) {
+        setAllBookings(slotResult.data || slotResult);
+      }
+    } catch (error) {
+      console.error("Fetch slots error:", error);
+    }
+  };
+
+  fetchSlots();
+}, [selectedDate]);
+  // Preview ราคา (เรียก API preview ที่คุณเขียนไว้)
+  useEffect(() => {
+    const getPreview = async () => {
+      if (!selectedVehicleId || !selectedService) return;
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('http://localhost:3000/api/bookings/preview', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({
+            vehicle_id: Number(selectedVehicleId),
+            main_service: selectedService,
+            extra_services: selectedAddons
+          })
+        });
+        if (response.ok) setPreviewData(await response.json());
+      } catch (err) { console.error("Preview error", err); }
+    };
+    getPreview();
+  }, [selectedVehicleId, selectedService, selectedAddons]);
+
+  // --- 4. Logic Functions ---
+ // ค้นหา getTimeSlots (ประมาณบรรทัดที่ 113)
+const getTimeSlots = () => {
+  // 1. กำหนดรอบเวลาทั้งหมดที่ร้านเปิดให้บริการ
+  const standardTimes = ['09:00', '10:30', '12:00', '13:30', '15:00', '16:30', '18:00'];
+
+  return standardTimes.map(t => {
+    // 2. ค้นหาในข้อมูลที่ดึงจาก DB (allBookings) ว่ามีคนจองรอบเวลานี้หรือยัง
+    // ตรวจสอบว่า API ของคุณใช้ Key ชื่อ 'time' หรือ 'booking_time' ให้ตรงกัน
+    const bookingData = Array.isArray(allBookings) 
+      ? allBookings.find(b => b.time === t) 
+      : null;
+
+    if (bookingData) {
+      // ถ้ามีข้อมูลการจองในรอบนี้ (เช่น { time: "09:00", count: 1, max: 2 })
+      return {
+        time: t,
+        slot: `${bookingData.count} / ${bookingData.max}`,
+        isFull: bookingData.count >= bookingData.max
+      };
+    } else {
+      // ถ้ายังไม่มีคนจองเลยในรอบนี้ ให้แสดงเป็นค่าว่างเริ่มต้น
+      return {
+        time: t,
+        slot: '0 / 2',
+        isFull: false
+      };
+    }
+  });
+};
+
+  const timeSlots = getTimeSlots();
+
+  const toggleAddon = (id: number) => {
+    setSelectedAddons(prev => prev.includes(id) ? prev.filter(a => a !== id) : [...prev, id]);
+  };
+
   const handleBooking = async () => {
   const vId = Number(selectedVehicleId);
 
@@ -52,321 +190,159 @@ const BookingPage = () => {
     return;
   }
 
-  // ✅ FIX เดือน (รองรับวันที่ 01 เป็นเดือนถัดไป)
-  let month = 3;
-  if (selectedDate === '01') {
-    month = 4;
-  }
-
-  // ✅ FIX timezone ไทย (กันเวลาเพี้ยนจาก toISOString)
-  const [hour, minute] = selectedTime.split(':').map(Number);
-
-  const localDate = new Date(
-    2026,
-    month - 1,
-    Number(selectedDate),
-    hour,
-    minute,
-    0
-  );
+  // ✅ ใช้ตัวนี้ตัวเดียว
+  const targetDate = selectedDate;
 
   const bookingDateTime = new Date(
-    localDate.getTime() - localDate.getTimezoneOffset() * 60000
+    `${targetDate}T${selectedTime}:00+07:00`
   ).toISOString();
-
-  // ✅ Payload ตรง backend
-  const bookingData = {
-    vehicle_id: vId,
-    booking_datetime: bookingDateTime,
-    main_service: selectedService,
-    extra_services: selectedAddons,
-  };
-
-  console.log("Sending Payload to match API:", bookingData);
 
   try {
     const token = localStorage.getItem('token');
+
     const response = await fetch('http://localhost:3000/api/bookings', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify(bookingData)
+      body: JSON.stringify({
+        vehicle_id: vId,
+        booking_datetime: bookingDateTime,
+        main_service: selectedService,
+        extra_services: selectedAddons,
+      })
     });
-
-    const result = await response.json();
 
     if (response.ok) {
       alert('จองบริการสำเร็จ!');
-      navigate('/status');
+      navigate('/history');
     } else {
-      console.error("Server Error Detail:", result);
+      const result = await response.json();
       alert('จองไม่สำเร็จ: ' + (result.message || 'ตรวจสอบข้อมูลอีกครั้ง'));
     }
   } catch (error) {
-    console.error(error);
     alert('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้');
   }
 };
-  const mainServices = [
-    { id: 'std', name: 'ล้างสี - ดูดฝุ่น (STANDARD WASH)', desc: 'ล้างทำความสะอาดภายนอกและภายในรถเบื้องต้น เช็ดแห้ง ทำความสะอาดกระจก ดูดฝุ่นพื้นรถและพรม และเช็ดแผงหน้าปัด', price: 150 },
-    { id: 'prm', name: 'ล้างสี - ดูดฝุ่น + เคลือบแว็กซ์ (PREMIUM WASH)', desc: 'บริการแบบ STANDARD WASH พร้อมเพิ่มการลงแว็กซ์เคลือบสีรถ เพื่อความเงางามและปกป้องสีจากมลภาวะ และป้องกันคราบน้ำเกาะ', price: 300 },
-    { id: 'dlx', name: 'สปารถเต็มรูปแบบ (DELUXE DETAILING)', desc: 'บริการทำความสะอาดอย่างละเอียด ทั้งภายนอกและภายในรถยนต์ ฟื้นฟูสภาพพื้นผิวรถยนต์และพรม ให้กลับมาดูดีเหมือนใหม่', price: 700 },
-    { id: 'ubw', name: 'ล้างอัดฉีด - ฉีดล้างช่วงล่าง (UNDERBODY WASH)', desc: 'ฉีดล้างคราบสกปรกและโคลนสะสมใต้ท้องรถด้วยเครื่องฉีดน้ำแรงดันสูง พร้อมเคลือบป้องกันสนิมเบื้องต้น', price: 250 },
-    { id: 'exp', name: 'ล้างด่วนภายนอก (EXPRESS EXTERIOR ONLY)', desc: 'ล้างทำความสะอาดสีรถและเช็ดแห้งภายนอกเพียงอย่างเดียวเพื่อความรวดเร็ว (ไม่รวมงานดูดฝุ่นและภายใน)', price: 100 },
-    { id: 'hyg', name: 'ฆ่าเชื้อและฟอกอากาศ (HYGIENE PACKAGE)', desc: 'บริการอบไอน้ำ ฆ่าเชื้อโรคในรถ และใช้น้ำยาอบโอโซนเพื่อทำลายกลิ่นไม่พึงประสงค์', price: 400 },
-  ];
 
-  const addons = [
-    { id: 'rain', name: 'เคลือบกระจกกันน้ำ (RAIN REPELLENT)', desc: 'เคลือบสารผลักน้ำบนกระจกหน้าและรอบคัน ช่วยให้ทัศนวิสัยดีเยี่ยมแม้ฝนตกหนัก', price: 50 },
-    { id: 'tar', name: 'ขจัดคราบยางมะตอย / คราบแมลง (TAR & BUG REMOVAL)', desc: 'ใช้น้ำยาเฉพาะทางเพื่อสลายคราบยางมะตอยและแมลง โดยไม่ทำลายชั้นแลกเกอร์ของรถ', price: 200 },
-    { id: 'eng', name: 'ล้างทำความสะอาดห้องเครื่อง (ENGINE BAY CLEANING)', desc: 'ขจัดคราบน้ำมันและฝุ่นสะสมในห้องเครื่องอย่างปลอดภัย พร้อมพ่นเคลือบรักษาท่อยางและพลาสติก', price: 300 },
-    { id: 'ozone', name: 'อบโอโซนกำจัดกลิ่นอับ (OZONE PURIFICATION)', desc: 'อบโอโซนภายในรถ 15-20 นาที เพื่อกำจัดกลิ่นบุหรี่ กลิ่นอาหาร และเชื้อแบคทีเรียในช่องแอร์', price: 100 },
-    { id: 'trim', name: 'ฟื้นฟูพลาสติกภายนอก (PLASTIC TRIM RESTORE)', desc: 'ฟื้นฟูชิ้นส่วนพลาสติกสีดำที่ซีดจาง (กันชน, คิ้วล้อ) ให้กลับมาดำเงางามและทนทานต่อน้ำ', price: 100 },
-  ];
-
-  const dates = [
-    { day: 'MON', date: '23' }, { day: 'TUE', date: '24' }, { day: 'WED', date: '25' },
-    { day: 'THU', date: '26' }, { day: 'FRI', date: '27' }, { day: 'SAT', date: '28' },
-    { day: 'SUN', date: '01' },
-  ];
-
-  const timeSlots = [
-    { time: '09:00', slot: '0 / 2' }, { time: '10:30', slot: '1 / 2' }, { time: '12:00', slot: '2 / 2' },
-    { time: '13:30', slot: '0 / 2' }, { time: '15:00', slot: '0 / 2' }, { time: '16:30', slot: '0 / 2' },
-  ];
-
-  const toggleAddon = (id: string) => {
-    setSelectedAddons(prev => prev.includes(id) ? prev.filter(a => a !== id) : [...prev, id]);
-  };
-
+  // --- 5. Render ---
   return (
     <div className="booking-page-root">
       <style>{`
-        .booking-page-root {
-          max-width: 600px;
-          margin: 0 auto;
-          padding: 30px 20px 100px;
-          font-family: 'Inter', 'Prompt', sans-serif;
-          background-color: #fafafa;
-          color: #333;
-        }
-
+        .booking-page-root { max-width: 600px; margin: 0 auto; padding: 30px 20px 100px; font-family: 'Inter', 'Prompt', sans-serif; background-color: #fafafa; color: #333; }
         .title-section { margin-bottom: 35px; }
         .main-title { font-size: 24px; font-weight: 800; margin-bottom: 4px; color: #000; }
         .sub-title { font-size: 11px; color: #888; letter-spacing: 0.02em; }
-
         .step-container { margin-bottom: 45px; }
         .step-head { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
-        .step-num {
-          background: #ff3b30; color: white; width: 28px; height: 28px;
-          border-radius: 50%; display: flex; align-items: center; justify-content: center;
-          font-weight: bold; font-size: 14px;
-        }
+        .step-num { background: #ff3b30; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; }
         .step-label { font-size: 16px; font-weight: 700; color: #444; }
-
         .car-list { display: flex; flex-direction: column; gap: 10px; }
-        .car-card {
-          display: flex; align-items: center; padding: 15px; background: white;
-          border-radius: 16px; border: 2px solid transparent; cursor: pointer;
-          box-shadow: 0 4px 10px rgba(0,0,0,0.02); transition: 0.2s;
-        }
+        .car-card { display: flex; align-items: center; padding: 15px; background: white; border-radius: 16px; border: 2px solid transparent; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.02); transition: 0.2s; }
         .car-card.selected { border-color: #ff3b30; background: #fffcfc; }
         .car-info-main { flex: 1; margin-left: 15px; }
         .car-plate { font-size: 15px; font-weight: 800; color: #000; }
         .car-detail { font-size: 11px; color: #999; }
-        .add-more-car {
-          display: flex; align-items: center; justify-content: center; gap: 8px;
-          padding: 12px; border: 1.5px dashed #ccc; border-radius: 12px;
-          color: #888; text-decoration: none; font-size: 13px; font-weight: 600; margin-top: 10px;
-        }
-
-        .car-empty-box {
-          border: 1.5px dashed #ffbaba; background: #fff8f8;
-          border-radius: 12px; padding: 40px 20px; text-align: center;
-        }
-        .car-icon-bg {
-          background: #ffe5e5; width: 65px; height: 65px; border-radius: 50%;
-          display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;
-        }
-        .car-empty-text { font-size: 15px; font-weight: 800; margin-bottom: 4px; }
-        .car-empty-sub { font-size: 11px; color: #999; margin-bottom: 20px; line-height: 1.5; }
-        .btn-add-car {
-          background: #d40000; color: white; padding: 8px 24px; border-radius: 50px;
-          border: none; font-weight: 700; font-size: 13px; cursor: pointer;
-          display: inline-flex; align-items: center; gap: 6px;
-          text-decoration: none;
-        }
-
+        .add-more-car { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; border: 1.5px dashed #ccc; border-radius: 12px; color: #888; text-decoration: none; font-size: 13px; font-weight: 600; margin-top: 10px; }
         .service-group-label { font-size: 12px; font-weight: 700; color: #bbb; margin-bottom: 15px; display: block; border-bottom: 1px solid #eee; padding-bottom: 8px; }
-        .service-item {
-          display: flex; align-items: flex-start; gap: 15px; padding: 18px;
-          background: #f2f2f2; border-radius: 12px; margin-bottom: 10px; cursor: pointer;
-          border: 2px solid transparent; transition: 0.2s;
-        }
+        .service-item { display: flex; align-items: flex-start; gap: 15px; padding: 18px; background: #f2f2f2; border-radius: 12px; margin-bottom: 10px; cursor: pointer; border: 2px solid transparent; transition: 0.2s; }
         .service-item.selected { border-color: #d40000; background: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
-        .radio-circle {
-          min-width: 18px; height: 18px; border-radius: 50%; border: 2px solid #ccc;
-          margin-top: 3px; display: flex; align-items: center; justify-content: center;
-        }
+        .radio-circle { min-width: 18px; height: 18px; border-radius: 50%; border: 2px solid #ccc; margin-top: 3px; display: flex; align-items: center; justify-content: center; }
         .selected .radio-circle { border-color: #d40000; }
         .radio-inner { width: 10px; height: 10px; background: #d40000; border-radius: 50%; }
-        
         .service-info { flex: 1; }
         .service-name { font-size: 14px; font-weight: 700; margin-bottom: 4px; display: block; }
         .service-desc { font-size: 9px; color: #aaa; line-height: 1.4; display: block; }
         .service-price { font-size: 13px; font-weight: 700; color: #999; margin-left: 10px; white-space: nowrap; }
         .selected .service-price { color: #d40000; }
-
         .date-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 25px; }
-        .date-btn {
-          display: flex; flex-direction: column; align-items: center; padding: 12px 0;
-          background: #efefef; border-radius: 10px; border: none; cursor: pointer;
-        }
+        .date-btn { display: flex; flex-direction: column; align-items: center; padding: 12px 0; background: #efefef; border-radius: 10px; border: none; cursor: pointer; }
         .date-btn.active { background: #d40000; color: white; }
         .date-day { font-size: 9px; font-weight: 700; margin-bottom: 4px; opacity: 0.6; }
         .date-num { font-size: 18px; font-weight: 800; }
-
         .time-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-        .time-btn {
-          padding: 12px; background: #efefef; border-radius: 8px; border: none;
-          display: flex; justify-content: space-between; align-items: center; cursor: pointer;
-        }
+        .time-btn { padding: 12px; background: #efefef; border-radius: 8px; border: none; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .time-btn.active { background: #fff; outline: 1.5px solid #ff3b30; color: #ff3b30; }
-        .time-val { font-size: 12px; font-weight: 700; }
-        .time-slot { font-size: 10px; opacity: 0.4; font-weight: 700; }
-
-        .summary-bar {
-          position: fixed; bottom: 0; left: 0; right: 0; background: white;
-          padding: 15px 25px; border-top: 1px solid #eee; display: flex;
-          justify-content: space-between; align-items: center; box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
-        }
+        .time-btn:disabled { opacity: 0.5; cursor: not-allowed; background: #f5f5f5; color: #ccc; }
+        .summary-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 15px 25px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); }
         .total-label { font-size: 10px; font-weight: 800; color: #bbb; text-transform: uppercase; }
         .total-val { font-size: 24px; font-weight: 900; color: #d40000; }
-        .btn-submit {
-          background: #d40000; color: white; padding: 14px 40px; border-radius: 12px;
-          border: none; font-weight: 800; font-size: 14px; cursor: pointer;
-        }
+        .btn-submit { background: #d40000; color: white; padding: 14px 40px; border-radius: 12px; border: none; font-weight: 800; font-size: 14px; cursor: pointer; }
       `}</style>
 
       <div className="title-section">
         <h1 className="main-title">จองบริการล้างรถ</h1>
-        <p className="sub-title">บริการล้างรถระดับพรีเมียมเพียงปลายนิ้ว พร้อมรับประกัน ความสะอาดและเงางามดุจรถใหม่ งานคุณภาพ</p>
+        <p className="sub-title">เลือกบริการที่ต้องการและระบุวันเวลาเพื่อเข้ารับบริการ</p>
       </div>
 
-      {/* Section 1 */}
+      {/* 1. Car Selection */}
       <div className="step-container">
-        <div className="step-head">
-          <div className="step-num">1</div>
-          <span className="step-label">ข้อมูลรถ</span>
-        </div>
-
-        {loading ? (
-          <p style={{ textAlign: 'center', color: '#999', fontSize: '13px' }}>กำลังโหลดข้อมูลรถ...</p>
-        ) : vehicles.length > 0 ? (
-          <div className="car-list">
-            {vehicles.map(car => {
-              const carId = (car.vehicle_id || car._id).toString();
-              return (
-                <div
-                  key={carId}
-                  className={`car-card ${selectedVehicleId === carId ? 'selected' : ''}`}
-                  onClick={() => setSelectedVehicleId(carId)}
-                >
-                  <div className="radio-circle">
-                    {selectedVehicleId === carId && <div className="radio-inner" />}
-                  </div>
-                  <div className="car-info-main">
-                    <div className="car-plate">{car.license_plate}</div>
-                    <div className="car-detail">{car.brand} {car.model} • {car.color}</div>
-                  </div>
-                  <ChevronRight size={18} color="#ccc" />
+        <div className="step-head"><div className="step-num">1</div><span className="step-label">ข้อมูลรถ</span></div>
+        <div className="car-list">
+          {vehicles.map(car => {
+            const carId = (car.vehicle_id || car._id).toString();
+            return (
+              <div key={carId} className={`car-card ${selectedVehicleId === carId ? 'selected' : ''}`} onClick={() => setSelectedVehicleId(carId)}>
+                <div className="radio-circle">{selectedVehicleId === carId && <div className="radio-inner" />}</div>
+                <div className="car-info-main">
+                  <div className="car-plate">{car.license_plate}</div>
+                  <div className="car-detail">{car.brand} {car.model}</div>
                 </div>
-              );
-            })}
-            <Link to="/addcar" className="add-more-car">
-              <Plus size={16} /> เพิ่มรถคันอื่น
-            </Link>
-          </div>
-        ) : (
-          <div className="car-empty-box">
-            <div className="car-icon-bg"><Car color="#d40000" size={32} /></div>
-            <div className="car-empty-text">ยังไม่มีรถ</div>
-            <p className="car-empty-sub">เพิ่มรายละเอียดรถของคุณเพื่อ<br />ดูแพ็กเกจล้างรถระดับพรีเมียมที่เหมาะสม</p>
-            <Link to="/addcar" className="btn-add-car">
-              <Plus size={16} strokeWidth={3} /> เพิ่มรถคันแรกของคุณ
-            </Link>
-          </div>
-        )}
+                <ChevronRight size={18} color="#ccc" />
+              </div>
+            );
+          })}
+          <Link to="/addcar" className="add-more-car"><Plus size={16} /> เพิ่มรถ</Link>
+        </div>
       </div>
 
-      {/* Section 2 */}
+      {/* 2. Service Selection (จาก Database) */}
       <div className="step-container">
-        <div className="step-head">
-          <div className="step-num">2</div>
-          <span className="step-label">บริการและแพ็กเกจ</span>
-        </div>
-        
+        <div className="step-head"><div className="step-num">2</div><span className="step-label">บริการและแพ็กเกจ</span></div>
         <span className="service-group-label">บริการหลัก</span>
         {mainServices.map(s => (
           <div key={s.id} className={`service-item ${selectedService === s.id ? 'selected' : ''}`} onClick={() => setSelectedService(s.id)}>
             <div className="radio-circle">{selectedService === s.id && <div className="radio-inner" />}</div>
-            <div className="service-info">
-              <span className="service-name">{s.name}</span>
-              <span className="service-desc">{s.desc}</span>
-            </div>
+            <div className="service-info"><span className="service-name">{s.name}</span><span className="service-desc">{s.desc}</span></div>
             <span className="service-price">{s.price} THB</span>
           </div>
         ))}
-
-        <span className="service-group-label" style={{marginTop: '30px'}}>บริการเสริม <span style={{fontWeight: 400, fontSize: '10px'}}>( ลูกค้าสามารถเลือกเพิ่มได้ตามความต้องการ )</span></span>
+        <span className="service-group-label" style={{marginTop: '30px'}}>บริการเสริม</span>
         {addons.map(a => (
           <div key={a.id} className={`service-item ${selectedAddons.includes(a.id) ? 'selected' : ''}`} onClick={() => toggleAddon(a.id)}>
             <div className="radio-circle" style={{borderRadius: '4px'}}>{selectedAddons.includes(a.id) && <Check size={14} color="#d40000" strokeWidth={4} />}</div>
-            <div className="service-info">
-              <span className="service-name">{a.name}</span>
-              <span className="service-desc">{a.desc}</span>
-            </div>
+            <div className="service-info"><span className="service-name">{a.name}</span><span className="service-desc">{a.desc}</span></div>
             <span className="service-price">{a.price} THB</span>
           </div>
         ))}
       </div>
 
-      {/* Section 3 */}
+      {/* 3. DateTime Selection (แบบ Dynamic) */}
       <div className="step-container">
-        <div className="step-head">
-          <div className="step-num">3</div>
-          <span className="step-label">วันที่และเวลา</span>
-        </div>
+        <div className="step-head"><div className="step-num">3</div><span className="step-label">วันที่และเวลา</span></div>
         <div className="date-row">
           {dates.map(d => (
-            <button key={d.date} className={`date-btn ${selectedDate === d.date ? 'active' : ''}`} onClick={() => setSelectedDate(d.date)}>
-              <span className="date-day">{d.day}</span>
-              <span className="date-num">{d.date}</span>
+            <button key={d.date} className={`date-btn ${selectedDate === d.fullDate ? 'active' : ''}`} onClick={() => setSelectedDate(d.fullDate)}>
+              <span className="date-day">{d.day}</span><span className="date-num">{d.date}</span>
             </button>
           ))}
         </div>
         <div className="time-row">
           {timeSlots.map(t => (
-            <button key={t.time} className={`time-btn ${selectedTime === t.time ? 'active' : ''}`} onClick={() => setSelectedTime(t.time)}>
-              <span className="time-val">{t.time}</span>
-              <span className="time-slot">{t.slot}</span>
+            <button key={t.time} disabled={t.isFull} className={`time-btn ${selectedTime === t.time ? 'active' : ''}`} onClick={() => setSelectedTime(t.time)}>
+              <span className="time-val">{t.time}</span><span className="time-slot">{t.slot}</span>
             </button>
           ))}
         </div>
       </div>
 
-      {/* Sticky Summary Bar */}
+      {/* Summary Bar */}
       {selectedService && (
         <div className="summary-bar">
           <div>
-            <div className="total-label">ยอดรวมประมาณการ</div>
-            <div className="total-val">
-              {(mainServices.find(s => s.id === selectedService)?.price || 0) + 
-                selectedAddons.reduce((acc, id) => acc + (addons.find(a => a.id === id)?.price || 0), 0)
-              } <span style={{fontSize: '12px', color: '#999'}}>THB</span>
-            </div>
+            <div className="total-label">ยอดรวมสุทธิ</div>
+            <div className="total-val">{previewData?.total_price || 0} <span style={{fontSize: '12px', color: '#999'}}>THB</span></div>
           </div>
           <button className="btn-submit" onClick={handleBooking}>ยืนยันการจอง</button>
         </div>

@@ -561,36 +561,45 @@ router.get("/slots", authMiddleware, async (req, res) => {
     // เวลาตาม UI
     const TIMES = ["09:00", "10:30", "12:00", "13:30", "15:00", "16:30", "18:00"];
 
-    const start = new Date(date);
-    start.setHours(0, 0, 0, 0);
-
-    const end = new Date(date);
-    end.setHours(23, 59, 59, 999);
+    // ✅ ใช้เวลาไทย
+    const start = new Date(`${date}T00:00:00+07:00`);
+    const end = new Date(`${date}T23:59:59+07:00`);
 
     const dayBookings = await bookings.find({
       booking_datetime: { $gte: start, $lte: end }
     }).toArray();
 
-    const result = TIMES.map(time => {
-      const [h, m] = time.split(":");
+    // ✅ นับจำนวนแต่ละ slot (แบบเร็ว + ไม่เพี้ยน)
+    const slotCount = {};
 
-      const slotDate = new Date(`${date}T${time}:00`);
-      slotDate.setHours(parseInt(h), parseInt(m), 0, 0);
+    dayBookings.forEach(b => {
+      const d = new Date(b.booking_datetime);
 
-      const count = dayBookings.filter(b => {
-        return new Date(b.booking_datetime).getTime() === slotDate.getTime();
-      }).length;
+      const thaiTime = d.toLocaleString("en-GB", {
+        timeZone: "Asia/Bangkok",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false
+      });
 
-      return {
-        time,
-        count,
-        max: MAX_PER_SLOT
-      };
+      if (!slotCount[thaiTime]) {
+        slotCount[thaiTime] = 0;
+      }
+
+      slotCount[thaiTime] += 1;
     });
+
+    // ✅ สร้าง result สำหรับ frontend
+    const result = TIMES.map(time => ({
+      time,
+      count: slotCount[time] || 0,
+      max: MAX_PER_SLOT
+    }));
 
     res.json(result);
 
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "slot error" });
   }
 });
