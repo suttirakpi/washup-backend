@@ -9,7 +9,6 @@ export default function Register() {
     phone: "",
   });
 
-  // 1️⃣ เพิ่ม State สำหรับเก็บค่ายืนยันรหัสผ่าน
   const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
 
@@ -20,10 +19,9 @@ export default function Register() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // 2️⃣ ตรวจสอบว่ารหัสผ่านตรงกันไหมก่อนส่ง API
     if (formData.login_password !== confirmPassword) {
       alert("รหัสผ่านไม่ตรงกัน กรุณากรอกใหม่อีกครั้ง");
-      return; // หยุดการทำงาน ไม่ส่ง API
+      return;
     }
 
     try {
@@ -37,9 +35,19 @@ export default function Register() {
 
       if (response.ok) {
         alert("สมัครสมาชิกสำเร็จ!");
+
+        // ✅ ล้างข้อมูลใน State ทั้งหมดหลังจากสมัครสำเร็จ
+        setFormData({
+          login_name: "",
+          login_password: "",
+          fullname: "",
+          phone: "",
+        });
+        setConfirmPassword("");
+
         navigate("/login");
       } else {
-        alert(data.message); // แสดง Error จาก Backend (เช่น Username ซ้ำ)
+        alert(data.message);
       }
     } catch (error) {
       console.error("Register Error:", error);
@@ -49,7 +57,7 @@ export default function Register() {
   return (
     <>
       <style>{`
-        /* CSS เดิม เป๊ะตามดีไซน์ */
+        /* CSS เดิมของคุณ */
         .auth-page-bg { background-color: #f8f9fa; min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: 'Kanit', sans-serif; padding: 40px 20px; }
         .auth-card { background: white; padding: 50px 40px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); width: 100%; max-width: 500px; text-align: center; }
         .auth-logo { height: 60px; margin-bottom: 30px; }
@@ -74,8 +82,9 @@ export default function Register() {
           />
           <h2 className="auth-title">สมัครสมาชิกใหม่</h2>
 
-          <form onSubmit={handleRegister}>
-            {/* ... ช่อง Fullname, Phone, Username เหมือนเดิม ... */}
+          <form onSubmit={handleRegister} autoComplete="off">
+            {" "}
+            {/* ✅ ป้องกัน Browser จำค่าเดิมแบบ Auto-fill */}
             <div className="input-group-clean">
               <label>ชื่อ-นามสกุล / Full Name</label>
               <input
@@ -83,6 +92,7 @@ export default function Register() {
                 name="fullname"
                 className="input-clean"
                 placeholder="สมชาย รักสะอาด"
+                value={formData.fullname} // ✅ ผูก Value กับ State
                 onChange={handleChange}
                 required
               />
@@ -94,6 +104,7 @@ export default function Register() {
                 name="phone"
                 className="input-clean"
                 placeholder="0812345678"
+                value={formData.phone} // ✅ ผูก Value กับ State
                 onChange={handleChange}
                 required
               />
@@ -105,12 +116,12 @@ export default function Register() {
                 name="login_name"
                 className="input-clean"
                 placeholder="ภาษาอังกฤษหรือตัวเลข"
+                value={formData.login_name} // ✅ ผูก Value กับ State
                 onChange={handleChange}
+                autoComplete="new-username" // ✅ ป้องกัน Auto-fill แย่งค่า
                 required
               />
             </div>
-
-            {/* ช่องรหัสผ่าน */}
             <div className="input-group-clean">
               <label>รหัสผ่าน / Password</label>
               <input
@@ -118,7 +129,9 @@ export default function Register() {
                 name="login_password"
                 className="input-clean"
                 placeholder="********"
+                value={formData.login_password} // ✅ ผูก Value กับ State
                 onChange={handleChange}
+                autoComplete="new-password"
                 required
               />
               <p className="password-hint">
@@ -126,8 +139,6 @@ export default function Register() {
                 ตัว (!@#$%)
               </p>
             </div>
-
-            {/* 3️⃣ เพิ่มช่องยืนยันรหัสผ่าน (UI เหมือนช่องรหัสผ่าน) */}
             <div className="input-group-clean">
               <label>ยืนยันรหัสผ่าน / Confirm Password</label>
               <input
@@ -136,10 +147,10 @@ export default function Register() {
                 placeholder="กรอกรหัสผ่านอีกครั้ง"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
+                autoComplete="new-password"
                 required
               />
             </div>
-
             <button type="submit" className="btn-register-red">
               ยืนยันการสมัคร
             </button>

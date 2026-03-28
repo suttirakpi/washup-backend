@@ -17,7 +17,10 @@ export default function Home() {
             WASH UP ระบบจองคิวล้างรถ เลือกรถ เลือกบริการ และระบุเวลาที่คุณสะดวก
             พร้อมติดตามสถานะแบบ REAL-TIME เพื่อประสบการณ์ที่ดีที่สุดของคุณ
           </p>
-          <button className="btn-booking-hero">จองคิวล้างรถทันที</button>
+          {/* ✅ แก้ไข: เปลี่ยนปุ่ม Hero เป็น Link */}
+          <Link to="/booking" className="btn-booking-hero" style={{ textDecoration: 'none' }}>
+            จองคิวล้างรถทันที
+          </Link>
         </div>
         <div className="hero-right"></div>
       </section>
@@ -118,7 +121,10 @@ export default function Home() {
             <h4>รับรถ</h4>
           </div>
         </div>
-        <button className="btn-main-booking">จองคิวล้างรถ</button>
+        {/* ✅ แก้ไข: เปลี่ยนปุ่มวิธีใช้บริการ เป็น Link */}
+        <Link to="/booking" className="btn-main-booking" style={{ textDecoration: 'none', display: 'inline-block' }}>
+          จองคิวล้างรถ
+        </Link>
       </section>
 
       <section className="package-section">
@@ -140,7 +146,10 @@ export default function Home() {
                 <i className="fas fa-check"></i> ฉีดล้างซุ้มล้อ
               </li>
             </ul>
-            <button className="btn-select">ขอจองบริการนี้</button>
+            {/* ✅ แก้ไข: เปลี่ยนปุ่มเลือกแพ็กเกจ เป็น Link */}
+            <Link to="/booking" className="btn-select" style={{ textDecoration: 'none', textAlign: 'center' }}>
+              ขอจองบริการนี้
+            </Link>
           </div>
 
           <div className="package-card popular">
@@ -166,7 +175,10 @@ export default function Home() {
                 <i className="fas fa-check"></i> เช็ดกระจกทั้งนอกและภายใน
               </li>
             </ul>
-            <button className="btn-select">ขอจองบริการนี้</button>
+            {/* ✅ แก้ไข: เปลี่ยนปุ่มเลือกแพ็กเกจ เป็น Link */}
+            <Link to="/booking" className="btn-select" style={{ textDecoration: 'none', textAlign: 'center' }}>
+              ขอจองบริการนี้
+            </Link>
           </div>
 
           <div className="package-card">
@@ -194,21 +206,17 @@ export default function Home() {
                 <i className="fas fa-check"></i> พ่นน้ำหอมปรับอากาศในห้องโดยสาร
               </li>
             </ul>
-            <button className="btn-select">ขอจองบริการนี้</button>
+            {/* ✅ แก้ไข: เปลี่ยนปุ่มเลือกแพ็กเกจ เป็น Link */}
+            <Link to="/booking" className="btn-select" style={{ textDecoration: 'none', textAlign: 'center' }}>
+              ขอจองบริการนี้
+            </Link>
           </div>
         </div>
       </section>
 
       <section className="ready-bg">
         <h2>พร้อมให้รถคันโปรดของคุณ กลับมาสวยเหมือนเดิมหรือยัง</h2>
-        <div className="ready-btns">
-          <Link to="/register" className="btn-cta reg">
-            สมัครสมาชิก
-          </Link>
-          <Link to="/login" className="btn-cta log">
-            เข้าสู่ระบบ
-          </Link>
-        </div>
+        
       </section>
     </>
   );

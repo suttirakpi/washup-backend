@@ -6,6 +6,10 @@ import Login from "./pages/auth/Login"; // Import มาก่อน
 import Register from "./pages/auth/Register"; // 1. Import มา
 import OwnerDashboard from "./pages/admin/OwnerDashboard";
 // 1. นำเข้า StaffLayout ที่เพิ่งสร้าง
+import BookingPage from "./pages/user/booking";
+import AddCar from "./pages/user/addcar";
+import HistoryPage from "./pages/user/history"; // 1. Import หน้า History ที่สร้างใหม่
+
 import StaffLayout from "./layouts/StaffLayout";
 import StaffDashboard from "./pages/staff/Dashboard";
 import AdminLayout from "./layouts/AdminLayout";
@@ -15,9 +19,13 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        {/* 🟢 โซนลูกค้า */}
+        {/* 🟢 โซนลูกค้า (มี Navbar/Footer ตาม Layout) */}
         <Route path="/" element={<UserLayout />}>
           <Route index element={<Home />} />
+          <Route path="booking" element={<BookingPage />} />
+          <Route path="addcar" element={<AddCar />} />
+          <Route path="history" element={<HistoryPage />} />{" "}
+          {/* 2. เพิ่ม Route หน้าประวัติการจอง */}
         </Route>
 
         {/* 🔵 โซนพนักงาน */}
@@ -32,6 +40,7 @@ export default function App() {
           <Route path="packages" element={<ManagePackages />} />{" "}
         </Route>
 
+        {/* 🟡 โซน Authentication (ไม่มี Layout) */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
       </Routes>

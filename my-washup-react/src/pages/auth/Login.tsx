@@ -160,7 +160,15 @@ export default function Login() {
 
           <h2 className="login-title">เข้าสู่ระบบ WASH UP</h2>
 
-          <form onSubmit={handleLogin}>
+          <form onSubmit={handleLogin} autoComplete="off">
+            {/* 🛑 ส่วนที่เพิ่ม: ช่องหลอกสำหรับ Login */}
+            <input type="text" name="fake_user" style={{ display: "none" }} />
+            <input
+              type="password"
+              name="fake_pass"
+              style={{ display: "none" }}
+            />
+
             <div className="input-group-clean">
               <label>ชื่อผู้ใช้งาน / Username</label>
               <input
@@ -169,6 +177,7 @@ export default function Login() {
                 placeholder="กรุณากรอกชื่อผู้ใช้งาน"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                autoComplete="one-time-code" // ✅ เทคนิคหลอก Browser ไม่ให้จำค่า
                 required
               />
             </div>
@@ -181,6 +190,7 @@ export default function Login() {
                 placeholder="กรุณากรอกรหัสผ่าน"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                autoComplete="one-time-code"
                 required
               />
             </div>
