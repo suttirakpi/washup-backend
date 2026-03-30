@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Car, Clock, RotateCcw, CheckCircle2 } from "lucide-react";
+import ReviewModal from "./ReviewModal";
 
 interface Booking {
   booking_id: number;
@@ -11,27 +12,24 @@ interface Booking {
   vehicle_model: string;
   vehicle_plate: string;
   services: string[];
+  is_reviewed?: boolean; 
 }
 
 const HistoryPage = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // ✅ Mapping status ให้ตรงกับ Logic ของรูปภาพ
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const mapStatus = (status: string) => {
     switch (status) {
-      case "pending":
-        return "pending";
-      case "confirmed":
-        return "confirmed";
-      case "washing":
-        return "in_progress";
-      case "completed":
-        return "ready";
-      case "cancelled":
-        return "cancelled";
-      default:
-        return status;
+      case "pending": return "pending";
+      case "confirmed": return "confirmed";
+      case "washing": return "in_progress";
+      case "completed": return "ready";
+      case "cancelled": return "cancelled";
+      default: return status;
     }
   };
 
@@ -47,6 +45,8 @@ const HistoryPage = () => {
         const mapped = data.map((b: any) => ({
           ...b,
           ui_status: mapStatus(b.status),
+          // ✅ บังคับตรวจสอบค่าจาก DB ให้เป็น Boolean เพื่อใช้เปลี่ยนสีปุ่ม
+          is_reviewed: !!b.is_reviewed, 
         }));
         setBookings(mapped);
       }
@@ -59,6 +59,7 @@ const HistoryPage = () => {
 
   useEffect(() => {
     fetchHistory();
+    // ✅ ใช้ interval ในการดึงข้อมูลสถานะล่าสุด
     const interval = setInterval(fetchHistory, 3000);
     return () => clearInterval(interval);
   }, []);
@@ -70,6 +71,11 @@ const HistoryPage = () => {
       " – " +
       date.toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" })
     );
+  };
+
+  const handleOpenReview = (booking: Booking) => {
+    setSelectedBooking(booking);
+    setIsModalOpen(true);
   };
 
   const activeBookings = bookings.filter((b) =>
@@ -93,7 +99,6 @@ const HistoryPage = () => {
         @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;800&display=swap');
         
         .history-page { max-width: 800px; margin: 0 auto; padding: 40px 20px; font-family: 'Prompt', sans-serif; color: #333; }
-        
         .header-section { margin-bottom: 40px; border-bottom: 1px solid #eee; padding-bottom: 20px; }
         .header-section h1 { font-size: 28px; font-weight: 800; margin: 0; color: #000; }
         .header-section p { font-size: 14px; color: #666; margin-top: 5px; }
@@ -103,7 +108,6 @@ const HistoryPage = () => {
         .line-deco { flex-grow: 1; height: 1px; background: #eee; }
 
         .booking-card { background: #fff; border: 1px solid #e0e0e0; border-radius: 25px; padding: 25px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
-        
         .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .booking-info .id { font-size: 18px; font-weight: 700; color: #ff3b30; }
         .booking-info .date { font-size: 14px; color: #888; }
@@ -115,7 +119,6 @@ const HistoryPage = () => {
         .label { color: #888; }
         .value { font-weight: 600; color: #000; }
 
-        /* Stepper UI */
         .stepper { display: flex; justify-content: space-between; position: relative; padding: 0 10px; margin-bottom: 20px; }
         .step { display: flex; flex-direction: column; align-items: center; gap: 8px; z-index: 2; opacity: 0.3; }
         .step.active { opacity: 1; }
@@ -124,14 +127,31 @@ const HistoryPage = () => {
         .step-text { font-size: 11px; font-weight: 700; color: #888; }
         .step.active .step-text { color: #ff3b30; }
 
-        .cancel-link { text-align: right; margin-top: 15px; }
-        .cancel-link button { color: #ff3b30; background: none; border: none; font-size: 14px; cursor: pointer; text-decoration: underline; font-family: inherit; }
-
-        /* Past History */
         .past-card { display: flex; justify-content: space-between; align-items: center; padding: 20px; border-radius: 20px; background: #fff; border: 1px solid #eee; margin-bottom: 15px; }
-        .status-badge { padding: 6px 15px; border-radius: 10px; font-size: 13px; font-weight: 600; }
+        .status-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+
+        .status-badge { padding: 6px 0; border-radius: 10px; font-size: 13px; font-weight: 600; text-align: center; width: 90px; }
         .status-badge.ready { background: #dcfce7; color: #166534; }
         .status-badge.cancelled { background: #fee2e2; color: #991b1b; }
+
+        .review-button { 
+          background: #ff3b30; color: white; border: none; 
+          padding: 6px 0; border-radius: 10px; font-size: 12px;
+          font-weight: 600; cursor: pointer; font-family: 'Prompt', sans-serif;
+          transition: 0.2s; width: 90px; text-align: center;
+        }
+        .review-button:hover { background: #e0342a; transform: translateY(-1px); }
+
+        .review-button.reviewed {
+          background: #facc15 !important;
+          color: #001a33 !important;
+          cursor: default;
+          box-shadow: none;
+        }
+        .review-button.reviewed:hover {
+          background: #facc15 !important;
+          transform: none;
+        }
       `}</style>
 
       <div className="header-section">
@@ -142,67 +162,42 @@ const HistoryPage = () => {
       {activeBookings.length > 0 ? (
         <>
           <div className="section-title">
-            <RotateCcw size={20} /> กำลังดำเนินการอยู่{" "}
-            <div className="line-deco"></div>
+            <RotateCcw size={20} /> กำลังดำเนินการอยู่ <div className="line-deco"></div>
           </div>
-
           {activeBookings.map((item) => (
             <div key={item.booking_id} className="booking-card">
               <div className="card-top">
                 <div className="booking-info">
                   <div className="id">หมายเลขการจองที่ #{item.booking_id}</div>
-                  <div className="date">
-                    {formatDate(item.booking_datetime)}
-                  </div>
+                  <div className="date">{formatDate(item.booking_datetime)}</div>
                 </div>
                 <div className="price-tag">{item.total_price} THB</div>
               </div>
 
               <div className="car-detail-box">
-                <div className="car-icon-circle">
-                  <Car size={28} />
-                </div>
+                <div className="car-icon-circle"><Car size={28} /></div>
                 <div className="info-grid">
-                  <span className="label">ยี่ห้อรถ</span>{" "}
-                  <span className="value">: {item.vehicle_brand}</span>
-                  <span className="label">รุ่นรถ</span>{" "}
-                  <span className="value">: {item.vehicle_model}</span>
-                  <span className="label">ทะเบียนรถ</span>{" "}
-                  <span className="value">: {item.vehicle_plate}</span>
+                  <span className="label">ยี่ห้อรถ</span> <span className="value">: {item.vehicle_brand}</span>
+                  <span className="label">รุ่นรถ</span> <span className="value">: {item.vehicle_model}</span>
+                  <span className="label">ทะเบียนรถ</span> <span className="value">: {item.vehicle_plate}</span>
                 </div>
               </div>
 
               <div className="stepper">
-                <div
-                  className={`step ${["pending", "confirmed", "in_progress", "ready"].includes(item.ui_status || "") ? "active" : ""}`}
-                >
-                  <div className="circle">
-                    <Clock size={16} />
-                  </div>
+                <div className={`step ${["pending", "confirmed", "in_progress", "ready"].includes(item.ui_status || "") ? "active" : ""}`}>
+                  <div className="circle"><Clock size={16} /></div>
                   <span className="step-text">Pending</span>
                 </div>
-                <div
-                  className={`step ${["confirmed", "in_progress", "ready"].includes(item.ui_status || "") ? "active" : ""}`}
-                >
-                  <div className="circle">
-                    <CheckCircle2 size={16} />
-                  </div>
+                <div className={`step ${["confirmed", "in_progress", "ready"].includes(item.ui_status || "") ? "active" : ""}`}>
+                  <div className="circle"><CheckCircle2 size={16} /></div>
                   <span className="step-text">Confirmed</span>
                 </div>
-                <div
-                  className={`step ${["in_progress", "ready"].includes(item.ui_status || "") ? "active" : ""}`}
-                >
-                  <div className="circle">
-                    <Car size={16} />
-                  </div>
+                <div className={`step ${["in_progress", "ready"].includes(item.ui_status || "") ? "active" : ""}`}>
+                  <div className="circle"><Car size={16} /></div>
                   <span className="step-text">In Progress</span>
                 </div>
-                <div
-                  className={`step ${item.ui_status === "ready" ? "active" : ""}`}
-                >
-                  <div className="circle">
-                    <CheckCircle2 size={16} />
-                  </div>
+                <div className={`step ${item.ui_status === "ready" ? "active" : ""}`}>
+                  <div className="circle"><CheckCircle2 size={16} /></div>
                   <span className="step-text">Ready</span>
                 </div>
               </div>
@@ -210,7 +205,6 @@ const HistoryPage = () => {
           ))}
         </>
       ) : (
-        /* 🎯 ถ้าไม่มีข้อมูล จะแสดงแค่กล่องข้อความนี้กล่องเดียวครับ */
         <div style={{ textAlign: "center", padding: "40px", color: "#999" }}>
           ไม่มีรายการที่กำลังดำเนินการ
         </div>
@@ -219,8 +213,7 @@ const HistoryPage = () => {
       {pastBookings.length > 0 && (
         <>
           <div className="section-title past">
-            <RotateCcw size={20} /> ประวัติการจองที่ผ่านมา{" "}
-            <div className="line-deco"></div>
+            <RotateCcw size={20} /> ประวัติการจองที่ผ่านมา <div className="line-deco"></div>
           </div>
           {pastBookings.map((item) => (
             <div key={item.booking_id} className="past-card">
@@ -237,13 +230,32 @@ const HistoryPage = () => {
                   {item.vehicle_brand} ({item.vehicle_plate})
                 </div>
               </div>
-              <div className={`status-badge ${item.ui_status}`}>
-                {item.ui_status === "ready" ? "เสร็จสิ้น" : "ยกเลิกแล้ว"}
+
+              <div className="status-actions">
+                <div className={`status-badge ${item.ui_status}`}>
+                  {item.ui_status === "ready" ? "เสร็จสิ้น" : "ยกเลิกแล้ว"}
+                </div>
+                {item.ui_status === "ready" && (
+                  <button 
+                    className={`review-button ${item.is_reviewed ? "reviewed" : ""}`}
+                    onClick={() => !item.is_reviewed && handleOpenReview(item)}
+                    disabled={item.is_reviewed}
+                  >
+                    {item.is_reviewed ? "รีวิวแล้ว" : "รีวิวบริการ"}
+                  </button>
+                )}
               </div>
             </div>
           ))}
         </>
       )}
+
+      <ReviewModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        booking={selectedBooking}
+        onSuccess={fetchHistory}
+      />
     </div>
   );
 };

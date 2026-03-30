@@ -128,12 +128,14 @@ export default function Home() {
       </section>
 
       <section className="package-section">
-        <h2 className="section-title">แพ็กเกจบริการยอดนิยม</h2>
+        <h2 className="section-title" style={{ marginBottom: "50px", marginTop: "20px" }}>
+          แพ็กเกจบริการยอดนิยม</h2>
+        
         <div className="package-grid">
           <div className="package-card">
             <h3>ล้างอัดฉีด - ฉีดล้างช่วงล่าง</h3>
             <p
-              style={{ fontSize: "12px", color: "#888", marginBottom: "15px" }}
+              style={{ fontSize: "14px", color: "#888", marginBottom: "15px" }}
             >
               ดูแลความสะอาดล้างอัดฉีด รวมไปถึงใต้ท้องรถ และ ซุ้มล้อ
             </p>
