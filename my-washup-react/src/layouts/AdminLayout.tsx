@@ -18,7 +18,7 @@ export default function AdminLayout() {
 
   // 🔴 ฟังก์ชันกดปุ่ม Logout
   const handleLogout = () => {
-    if (window.confirm("คุณต้องการออกจากระบบใช่หรือไม่?")) {
+    if (window.confirm("คุณต้องการออกจากระบบใช่หรือไม่ครับ?")) {
       localStorage.clear(); // ล้างข้อมูลทั้งหมดในกระเป๋า (ลบ Token และ ชื่อ)
       navigate("/login"); // เด้งกลับไปหน้า Login
     }
